@@ -10,9 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2b520ef43ea5b5e46bcc19062dd5d0b8, type: 3}
-  m_Name: Gunshot
+  m_Name: Gun
   m_EditorClassIdentifier: 
   clipOptions:
   - {fileID: 8300000, guid: f6d44bf29bf71ee43bd9facdf58716d3, type: 3}
+  - {fileID: 8300000, guid: 7b85124190528904ab8220c9eed49777, type: 3}
+  - {fileID: 8300000, guid: 62badb90d5c5b14428ee58bc86994d16, type: 3}
   sources:
   - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  modulate: 1
+  pitchMin: 0.95
+  pitchMax: 1.05
+  volumeMin: 0.95
+  volumeMax: 1.05

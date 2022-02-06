@@ -59,11 +59,11 @@ public class AudioManager : MonoBehaviour
         SoundCue cue = Array.Find(soundCues, soundCue => soundCue.name == name);
         if (cue != null)
         {
-            cue.sources[0].Play();
+            cue.Play();
         }
         else
         {
-            Debug.LogWarning("Sound Cue \"" + name + "\" found in Resources folder. Check spelling of name.");
+            Debug.LogWarning("Sound Cue \"" + name + "\" not found in Resources folder. Check spelling of name.");
         }
     }
 }
