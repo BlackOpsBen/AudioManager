@@ -5,10 +5,16 @@ using TMPro;
 
 public class SoundTestUI : MonoBehaviour
 {
-    [SerializeField] private TMP_InputField inputField;
+    [SerializeField] private TMP_InputField inputFieldCue;
+    [SerializeField] private TMP_InputField inputFieldClip;
 
-    public void PlaySpecifiedSound()
+    public void PlaySpecifiedCue()
     {
-        AudioManager.Instance.PlaySoundCue(inputField.text);
+        AudioManager.Instance.PlaySoundCue(inputFieldCue.text);
+    }
+
+    public void PlaySpecifiedClip()
+    {
+        AudioManager.Instance.PlaySoundClip(inputFieldClip.text);
     }
 }

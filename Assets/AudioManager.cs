@@ -9,22 +9,36 @@ public class AudioManager : MonoBehaviour
 
     private SoundCue[] soundCues;
 
+    private AudioClip[] audioClips;
+
+    private SoundClip[] soundClips;
+
     private void Awake()
     {
         SingletonPattern();
         LoadResources();
         CreateAudioSources(ref soundCues);
+        CreateAudioSources(audioClips, ref soundClips);
     }
 
     private void LoadResources()
     {
         soundCues = Resources.LoadAll<SoundCue>("");
 
+        audioClips = Resources.LoadAll<AudioClip>("");
+
         Debug.Log(soundCues.Length + " Sound Cues found in Resources");
 
         foreach (SoundCue cue in soundCues)
         {
             Debug.Log(cue.name);
+        }
+
+        Debug.Log(audioClips.Length + " AudioClips found in Resources");
+
+        foreach (AudioClip clip in audioClips)
+        {
+            Debug.Log(clip.name);
         }
     }
 
@@ -54,6 +68,16 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    private void CreateAudioSources(AudioClip[] audioClips, ref SoundClip[] soundClips)
+    {
+        soundClips = new SoundClip[audioClips.Length];
+
+        for (int i = 0; i < audioClips.Length; i++)
+        {
+            soundClips[i] = new SoundClip(audioClips[i], gameObject.AddComponent<AudioSource>());
+        }
+    }
+
     public void PlaySoundCue(string name)
     {
         SoundCue cue = Array.Find(soundCues, soundCue => soundCue.name == name);
@@ -66,4 +90,26 @@ public class AudioManager : MonoBehaviour
             Debug.LogWarning("Sound Cue \"" + name + "\" not found in Resources folder. Check spelling of name.");
         }
     }
+
+    public void PlaySoundClip(string name)
+    {
+        SoundClip clip = Array.Find(soundClips, sound => sound.name == name);
+        clip.source.Play();
+    }
+}
+
+public class SoundClip
+{
+    public SoundClip(AudioClip audioClip, AudioSource audioSource)
+    {
+        this.source = audioSource;
+
+        this.source.clip = audioClip;
+
+        this.name = audioClip.name;
+    }
+
+    public string name;
+
+    public AudioSource source;
 }
