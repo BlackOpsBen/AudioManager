@@ -1,14 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 [CreateAssetMenu(fileName = "New Sound Cue", menuName = "Audio/Sound Cue")]
 public class SoundCue : ScriptableObject
 {
     public AudioClip[] clipOptions;
 
-    [HideInInspector]
-    public AudioSource[] sources;
+    public AudioMixerGroup audioMixerGroup;
 
     public bool modulate = true;
     public float pitchMin = 0.95f;
@@ -16,33 +16,34 @@ public class SoundCue : ScriptableObject
     public float volumeMin = 0.95f;
     public float volumeMax = 1.05f;
 
-    public void Play()
+    public AudioClip GetRandomClip()
     {
-        if (sources.Length > 0)
+        int rand = UnityEngine.Random.Range(0, clipOptions.Length);
+
+        return clipOptions[rand];
+    }
+
+    public float GetPitch()
+    {
+        if (modulate)
         {
-            int rand = UnityEngine.Random.Range(0, sources.Length);
-
-            if (modulate)
-            {
-                float randPitch = UnityEngine.Random.Range(pitchMin, pitchMax);
-                sources[rand].pitch = randPitch;
-
-                float randVolume = UnityEngine.Random.Range(volumeMin, volumeMax);
-                sources[rand].pitch = randVolume;
-            }
-
-            sources[rand].Play();
+            return UnityEngine.Random.Range(pitchMin, pitchMax);
         }
         else
         {
-            if (clipOptions.Length == 0)
-            {
-                Debug.LogError("SoundCue \" " + name + "\" contains no AudioClips!");
-            }
-            else
-            {
-                Debug.LogError("SoundCue \" " + name + "\" contains no AudioSources! The AudioManager may have failed to add a source.");
-            }
+            return 1.0f;
+        }
+    }
+
+    public float GetVolume()
+    {
+        if (modulate)
+        {
+            return UnityEngine.Random.Range(volumeMin, volumeMax);
+        }
+        else
+        {
+            return 1.0f;
         }
     }
 }
