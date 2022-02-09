@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b520ef43ea5b5e46bcc19062dd5d0b8, type: 3}
   m_Name: Test
   m_EditorClassIdentifier: 
-  clipOptions: []
+  clipOptions:
+  - {fileID: 8300000, guid: 6bcb5b0186b6c0144a158b44e6f8efb6, type: 3}
+  audioMixerGroup: {fileID: -5827663097423994339, guid: 5713a6a576b846b4480b1761d5aa92b4, type: 2}
   modulate: 1
-  pitchMin: 0.95
-  pitchMax: 1.05
-  volumeMin: 0.95
+  pitchMin: 0.1
+  pitchMax: 2
+  volumeMin: 0.5
   volumeMax: 1.05

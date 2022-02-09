@@ -19,8 +19,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 132b6fe34ab5e3c49b66c0dcf802474e, type: 3}
   - {fileID: 8300000, guid: 1a88b503fb528c34282d646fd4d41fa7, type: 3}
   - {fileID: 8300000, guid: 8fbaa38d62ed45a4e888da3b942a4ec6, type: 3}
-  sources:
-  - {fileID: 0}
+  audioMixerGroup: {fileID: -5827663097423994339, guid: 5713a6a576b846b4480b1761d5aa92b4, type: 2}
   modulate: 1
   pitchMin: 0.95
   pitchMax: 1.05
