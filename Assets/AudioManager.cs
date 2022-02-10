@@ -50,6 +50,8 @@ public class AudioManager : MonoBehaviour
         AudioClip clip = Array.Find(audioClips, sound => sound.name == name);
         AudioSource source2D = sourcePool2D.GetAudioSource();
         source2D.outputAudioMixerGroup = null;
+        source2D.volume = 1.0f;
+        source2D.pitch = 1.0f;
         source2D.PlayOneShot(clip);
     }
 
@@ -60,8 +62,9 @@ public class AudioManager : MonoBehaviour
     {
         AudioClip clip = Array.Find(audioClips, sound => sound.name == name);
         AudioSource source2D = sourcePool2D.GetAudioSource();
-
         source2D.outputAudioMixerGroup = GetAudioMixerGroup(mixerGroupName);
+        source2D.volume = 1.0f;
+        source2D.pitch = 1.0f;
         source2D.PlayOneShot(clip);
     }
 
@@ -73,6 +76,8 @@ public class AudioManager : MonoBehaviour
         AudioClip clip = Array.Find(audioClips, sound => sound.name == name);
         AudioSource source2D = sourcePool2D.GetAudioSource();
         source2D.outputAudioMixerGroup = null;
+        source2D.volume = 1.0f;
+        source2D.pitch = 1.0f;
         source2D.clip = clip;
         source2D.loop = true;
         source2D.Play();
@@ -90,6 +95,8 @@ public class AudioManager : MonoBehaviour
         AudioSource source2D = sourcePool2D.GetAudioSource();
 
         source2D.outputAudioMixerGroup = GetAudioMixerGroup(mixerGroupName);
+        source2D.volume = 1.0f;
+        source2D.pitch = 1.0f;
         source2D.clip = clip;
         source2D.loop = true;
         source2D.Play();
