@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class AudioManager : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class AudioManager : MonoBehaviour
 
     private SoundCue[] soundCues;
     private AudioClip[] audioClips;
+    private AudioMixer[] audioMixers;
     private SourcePool sourcePool2D;
 
     private void Awake()
@@ -24,8 +26,11 @@ public class AudioManager : MonoBehaviour
 
         audioClips = Resources.LoadAll<AudioClip>("");
 
+        audioMixers = Resources.LoadAll<AudioMixer>("");
+
         Debug.Log(soundCues.Length + " SoundCues found");
         Debug.Log(audioClips.Length + " AudioClips found");
+        Debug.Log(audioMixers.Length + " AudioMixers found");
     }
 
     private void SingletonPattern()
@@ -40,21 +45,45 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void PlaySound2D(string name, bool looping = false)
+    public void PlaySound2D(string name)
     {
         AudioClip clip = Array.Find(audioClips, sound => sound.name == name);
         AudioSource source2D = sourcePool2D.GetAudioSource();
         source2D.outputAudioMixerGroup = null;
-        source2D.loop = looping;
         source2D.PlayOneShot(clip);
     }
 
-    public void PlaySoundCue2D(string name, bool looping = false)
+    public void PlaySound2D(string name, string mixerGroupName)
+    {
+        AudioClip clip = Array.Find(audioClips, sound => sound.name == name);
+        AudioSource source2D = sourcePool2D.GetAudioSource();
+
+        AudioMixerGroup specifiedGroup = null;
+        foreach (AudioMixer mixer in audioMixers)
+        {
+            AudioMixerGroup[] groups = mixer.FindMatchingGroups(mixerGroupName);
+            
+            if (groups.Length > 0)
+            {
+                specifiedGroup = groups[0];
+                break;
+            }
+        }
+
+        if (specifiedGroup == null)
+        {
+            Debug.LogWarning("No mixer group named \"" + mixerGroupName + "\" was found.");
+        }
+
+        source2D.outputAudioMixerGroup = specifiedGroup;
+        source2D.PlayOneShot(clip);
+    }
+
+    public void PlaySoundCue2D(string name)
     {
         SoundCue cue = Array.Find(soundCues, sound => sound.name == name);
         AudioSource source2D = sourcePool2D.GetAudioSource();
         source2D.outputAudioMixerGroup = cue.audioMixerGroup;
-        source2D.loop = looping;
         source2D.pitch = cue.GetPitch();
         source2D.volume = cue.GetVolume();
         source2D.PlayOneShot(cue.GetRandomClip());
