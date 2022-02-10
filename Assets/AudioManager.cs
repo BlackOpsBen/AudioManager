@@ -14,11 +14,14 @@ public class AudioManager : MonoBehaviour
     private SourcePool sourcePool2D;
     private Dictionary<string, AudioSource> loopInstances = new Dictionary<string, AudioSource>();
 
+    private SourcePool sourcePool3D;
+
     private void Awake()
     {
         SingletonPattern();
         LoadResources();
         sourcePool2D = new SourcePool(gameObject, true);
+        sourcePool3D = new SourcePool(gameObject, false);
     }
 
     private void LoadResources()
@@ -42,6 +45,9 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    #region Play 2D Sounds
+
+    #region Play 2D AudioClips
     /// <summary>
     /// Plays the named AudioClip from the Resources folder.
     /// </summary>
@@ -104,22 +110,9 @@ public class AudioManager : MonoBehaviour
         Stop2DLooping(uniqueId);
         loopInstances.Add(uniqueId, source2D);
     }
+    #endregion
 
-    /// <summary>
-    /// Stops the loop instance with the uniqueId.
-    /// </summary>
-    public void Stop2DLooping(string uniqueId)
-    {
-        if (loopInstances.ContainsKey(uniqueId))
-        {
-            AudioSource source2D = loopInstances[uniqueId];
-            loopInstances.Remove(uniqueId);
-            source2D.Stop();
-            source2D.loop = false;
-            source2D.clip = null;
-        }
-    }
-
+    #region Play 2D SoundCues
     /// <summary>
     /// Plays the named SoundCue from the Resources folder.
     /// </summary>
@@ -216,6 +209,40 @@ public class AudioManager : MonoBehaviour
         Stop2DLooping(uniqueId);
         loopInstances.Add(uniqueId, source2D);
     }
+    #endregion
+
+    /// <summary>
+    /// Stops the loop instance with the uniqueId.
+    /// </summary>
+    public void Stop2DLooping(string uniqueId)
+    {
+        if (loopInstances.ContainsKey(uniqueId))
+        {
+            AudioSource source2D = loopInstances[uniqueId];
+            loopInstances.Remove(uniqueId);
+            source2D.Stop();
+            source2D.loop = false;
+            source2D.clip = null;
+        }
+    }
+
+    #endregion
+
+    #region Play 3D Sounds
+
+    public void PlayAudioClip3D(string name, Transform parent)
+    {
+        AudioClip clip = Array.Find(audioClips, sound => sound.name == name);
+        AudioSource source2D = sourcePool3D.GetAudioSource();
+        source2D.transform.parent = parent;
+        source2D.transform.localPosition = Vector3.zero;
+        source2D.outputAudioMixerGroup = null;
+        source2D.volume = 1.0f;
+        source2D.pitch = 1.0f;
+        source2D.PlayOneShot(clip);
+    }
+
+    #endregion
 
     /// <summary>
     /// Gets the named AudioMixerGroup from the AudioMixers from the Resources folder.
@@ -276,13 +303,16 @@ public class SourcePool
             }
         }
 
-        AudioSource newSource = owner.AddComponent<AudioSource>();
+        AudioSource newSource;
         if (is2D)
         {
+            newSource = owner.AddComponent<AudioSource>();
             newSource.spatialBlend = 0.0f;
         }
         else
         {
+            GameObject newGameObject = new GameObject("Sound3D");
+            newSource = newGameObject.AddComponent<AudioSource>();
             newSource.spatialBlend = 1.0f;
         }
         sources.Add(newSource);
