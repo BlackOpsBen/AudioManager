@@ -12,6 +12,7 @@ public class AudioManager : MonoBehaviour
     private AudioClip[] audioClips;
     private AudioMixer[] audioMixers;
     private SourcePool sourcePool2D;
+    private Dictionary<string, AudioSource> loopInstances = new Dictionary<string, AudioSource>();
 
     private void Awake()
     {
@@ -27,10 +28,6 @@ public class AudioManager : MonoBehaviour
         audioClips = Resources.LoadAll<AudioClip>("");
 
         audioMixers = Resources.LoadAll<AudioMixer>("");
-
-        Debug.Log(soundCues.Length + " SoundCues found");
-        Debug.Log(audioClips.Length + " AudioClips found");
-        Debug.Log(audioMixers.Length + " AudioMixers found");
     }
 
     private void SingletonPattern()
@@ -45,7 +42,10 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void PlaySound2D(string name)
+    /// <summary>
+    /// Plays the named AudioClip from the Resources folder.
+    /// </summary>
+    public void PlayAudioClip2D(string name)
     {
         AudioClip clip = Array.Find(audioClips, sound => sound.name == name);
         AudioSource source2D = sourcePool2D.GetAudioSource();
@@ -53,16 +53,148 @@ public class AudioManager : MonoBehaviour
         source2D.PlayOneShot(clip);
     }
 
-    public void PlaySound2D(string name, string mixerGroupName)
+    /// <summary>
+    /// Plays the named AudioClip from the Resources folder and in the specified AudioMixerGroup.
+    /// </summary>
+    public void PlayAudioClip2D(string name, string mixerGroupName)
     {
         AudioClip clip = Array.Find(audioClips, sound => sound.name == name);
         AudioSource source2D = sourcePool2D.GetAudioSource();
 
+        source2D.outputAudioMixerGroup = GetAudioMixerGroup(mixerGroupName);
+        source2D.PlayOneShot(clip);
+    }
+
+
+    /// <summary>
+    /// Plays and loops the named AudioClip from the Resources folder. Provide an arbitrary uniqueId and use that same string in StopSound2DLooping in order to stop that instance of the loop.
+    /// </summary>
+    public void PlayAudioClip2DLooping(string name, string uniqueId)
+    {
+        AudioClip clip = Array.Find(audioClips, sound => sound.name == name);
+        AudioSource source2D = sourcePool2D.GetAudioSource();
+        source2D.outputAudioMixerGroup = null;
+        source2D.clip = clip;
+        source2D.loop = true;
+        source2D.Play();
+
+        loopInstances.Add(uniqueId, source2D);
+    }
+
+    /// <summary>
+    /// Plays and loops the named AudioClip from the Resources folder and in the specified AudioMixerGroup. Provide an arbitrary uniqueId and use that same string in StopSound2DLooping in order to stop that instance of the loop.
+    /// </summary>
+    public void PlayAudioClip2DLooping(string name, string mixerGroupName, string uniqueId)
+    {
+        AudioClip clip = Array.Find(audioClips, sound => sound.name == name);
+        AudioSource source2D = sourcePool2D.GetAudioSource();
+
+        source2D.outputAudioMixerGroup = GetAudioMixerGroup(mixerGroupName);
+        source2D.clip = clip;
+        source2D.loop = true;
+        source2D.Play();
+
+        loopInstances.Add(uniqueId, source2D);
+    }
+
+    /// <summary>
+    /// Stops the loop instance with the uniqueId.
+    /// </summary>
+    public void StopAudioClip2DLooping(string uniqueId)
+    {
+        AudioSource source2D = loopInstances[uniqueId];
+        source2D.Stop();
+        source2D.loop = false;
+        source2D.clip = null;
+    }
+
+    /// <summary>
+    /// Plays the named SoundCue from the Resources folder.
+    /// </summary>
+    public void PlaySoundCue2D(string name)
+    {
+        SoundCue cue = Array.Find(soundCues, sound => sound.name == name);
+        AudioSource source2D = sourcePool2D.GetAudioSource();
+        source2D.outputAudioMixerGroup = cue.audioMixerGroup;
+        source2D.pitch = cue.GetPitch();
+        source2D.volume = cue.GetVolume();
+        source2D.PlayOneShot(cue.GetRandomClip());
+    }
+
+    /// <summary>
+    /// Plays the named SoundCue from the Resources folder and in the specified AudioMixerGroup.
+    /// </summary>
+    public void PlaySoundCue2D(string name, string mixerGroupName)
+    {
+        SoundCue cue = Array.Find(soundCues, sound => sound.name == name);
+        AudioSource source2D = sourcePool2D.GetAudioSource();
+        source2D.pitch = cue.GetPitch();
+        source2D.volume = cue.GetVolume();
+
+        AudioMixerGroup specifiedGroup = GetAudioMixerGroup(mixerGroupName);
+        if (specifiedGroup == null)
+        {
+            specifiedGroup = cue.audioMixerGroup;
+        }
+
+        source2D.outputAudioMixerGroup = specifiedGroup;
+
+        source2D.PlayOneShot(cue.GetRandomClip());
+    }
+
+    /// <summary>
+    /// Plays and loops the named SoundCue from the Resources folder. Provide an arbitrary uniqueId and use that same string in StopSound2DLooping in order to stop that instance of the loop.
+    /// </summary>
+    public void PlaySoundCue2DLooping(string name, string uniqueId)
+    {
+        SoundCue cue = Array.Find(soundCues, sound => sound.name == name);
+        AudioSource source2D = sourcePool2D.GetAudioSource();
+        source2D.outputAudioMixerGroup = cue.audioMixerGroup;
+        source2D.pitch = cue.GetPitch();
+        source2D.volume = cue.GetVolume();
+        source2D.clip = cue.GetRandomClip();
+        source2D.loop = true;
+        source2D.Play();
+
+        loopInstances.Add(uniqueId, source2D);
+    }
+
+    /// <summary>
+    /// Plays and loops the named SoundCue from the Resources folder and in the specified AudioMixerGroup. Provide an arbitrary uniqueId and use that same string in StopSound2DLooping in order to stop that instance of the loop.
+    /// </summary>
+    public void PlaySoundCue2DLooping(string name, string mixerGroupName, string uniqueId)
+    {
+        SoundCue cue = Array.Find(soundCues, sound => sound.name == name);
+        AudioSource source2D = sourcePool2D.GetAudioSource();
+        source2D.pitch = cue.GetPitch();
+        source2D.volume = cue.GetVolume();
+        source2D.clip = cue.GetRandomClip();
+        source2D.loop = true;
+
+        AudioMixerGroup specifiedGroup = GetAudioMixerGroup(mixerGroupName);
+        if (specifiedGroup == null)
+        {
+            specifiedGroup = cue.audioMixerGroup;
+        }
+
+        source2D.outputAudioMixerGroup = specifiedGroup;
+        source2D.Play();
+
+        loopInstances.Add(uniqueId, source2D);
+    }
+
+    /// <summary>
+    /// Gets the named AudioMixerGroup from the AudioMixers from the Resources folder.
+    /// </summary>
+    private AudioMixerGroup GetAudioMixerGroup(string mixerGroupName)
+    {
         AudioMixerGroup specifiedGroup = null;
         foreach (AudioMixer mixer in audioMixers)
         {
             AudioMixerGroup[] groups = mixer.FindMatchingGroups(mixerGroupName);
-            
+
+            Debug.LogWarning("Groups found: " + groups.Length);
+
             if (groups.Length > 0)
             {
                 specifiedGroup = groups[0];
@@ -75,18 +207,7 @@ public class AudioManager : MonoBehaviour
             Debug.LogWarning("No mixer group named \"" + mixerGroupName + "\" was found.");
         }
 
-        source2D.outputAudioMixerGroup = specifiedGroup;
-        source2D.PlayOneShot(clip);
-    }
-
-    public void PlaySoundCue2D(string name)
-    {
-        SoundCue cue = Array.Find(soundCues, sound => sound.name == name);
-        AudioSource source2D = sourcePool2D.GetAudioSource();
-        source2D.outputAudioMixerGroup = cue.audioMixerGroup;
-        source2D.pitch = cue.GetPitch();
-        source2D.volume = cue.GetVolume();
-        source2D.PlayOneShot(cue.GetRandomClip());
+        return specifiedGroup;
     }
 }
 
