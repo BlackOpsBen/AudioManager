@@ -354,3 +354,9 @@ public class SourcePool
         return newSource;
     }
 }
+
+/* TODO Prevent null ref if Sound3D parent was destroyed. Subrscibe to parent OnDestroy to unparent itself?
+ * Can't attach to a transform because it would prevent being able to stop a loop attached,
+ * unless the transform has OnDestroy and stops it's loop and de-childs the sound3D gameObject before killing itself.
+ * StopLoop should unparent the gameobject in case the parent gets destroyed.
+*/
