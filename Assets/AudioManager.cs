@@ -48,6 +48,7 @@ public class AudioManager : MonoBehaviour
     #region Play 2D Sounds
 
     #region Play 2D AudioClips
+
     /// <summary>
     /// Plays the named AudioClip from the Resources folder.
     /// </summary>
@@ -110,6 +111,7 @@ public class AudioManager : MonoBehaviour
         Stop2DLooping(uniqueId);
         loopInstances.Add(uniqueId, source2D);
     }
+
     #endregion
 
     #region Play 2D SoundCues
@@ -230,16 +232,51 @@ public class AudioManager : MonoBehaviour
 
     #region Play 3D Sounds
 
+    /// <summary>
+    /// Plays the named AudioClip from the Resources folder as a 3D sound attached to the provided Transform.
+    /// </summary>
     public void PlayAudioClip3D(string name, Transform parent)
     {
         AudioClip clip = Array.Find(audioClips, sound => sound.name == name);
-        AudioSource source2D = sourcePool3D.GetAudioSource();
-        source2D.transform.parent = parent;
-        source2D.transform.localPosition = Vector3.zero;
-        source2D.outputAudioMixerGroup = null;
-        source2D.volume = 1.0f;
-        source2D.pitch = 1.0f;
-        source2D.PlayOneShot(clip);
+        AudioSource source3D = sourcePool3D.GetAudioSource();
+        source3D.transform.parent = parent;
+        source3D.transform.localPosition = Vector3.zero;
+        source3D.outputAudioMixerGroup = null;
+        source3D.volume = 1.0f;
+        source3D.pitch = 1.0f;
+        source3D.PlayOneShot(clip);
+    }
+
+    /// <summary>
+    /// Plays the named AudioClip from the Resources folder and in the specified AudioMixerGroup, as a 3D sound attached to the provided Transform.
+    /// </summary>
+    public void PlayAudioClip3D(string name, string mixerGroupName, Transform parent)
+    {
+        AudioClip clip = Array.Find(audioClips, sound => sound.name == name);
+        AudioSource source3D = sourcePool3D.GetAudioSource();
+        source3D.transform.parent = parent;
+        source3D.transform.localPosition = Vector3.zero;
+        source3D.outputAudioMixerGroup = GetAudioMixerGroup(mixerGroupName);
+        source3D.volume = 1.0f;
+        source3D.pitch = 1.0f;
+        source3D.PlayOneShot(clip);
+    }
+
+    public void PlayAudioClip3DLooping(string name, string uniqueId, Transform parent)
+    {
+        AudioClip clip = Array.Find(audioClips, sound => sound.name == name);
+        AudioSource source3D = sourcePool3D.GetAudioSource();
+        source3D.transform.parent = parent;
+        source3D.transform.localPosition = Vector3.zero;
+        source3D.outputAudioMixerGroup = null;
+        source3D.volume = 1.0f;
+        source3D.pitch = 1.0f;
+        source3D.clip = clip;
+        source3D.loop = true;
+        source3D.Play();
+
+        Stop2DLooping(uniqueId);
+        loopInstances.Add(uniqueId, source3D);
     }
 
     #endregion
@@ -253,8 +290,6 @@ public class AudioManager : MonoBehaviour
         foreach (AudioMixer mixer in audioMixers)
         {
             AudioMixerGroup[] groups = mixer.FindMatchingGroups(mixerGroupName);
-
-            Debug.LogWarning("Groups found: " + groups.Length);
 
             if (groups.Length > 0)
             {
