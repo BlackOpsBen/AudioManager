@@ -22,6 +22,8 @@ public class AudioManager : MonoBehaviour
         LoadResources();
         sourcePool2D = new SourcePool(gameObject, true);
         sourcePool3D = new SourcePool(gameObject, false);
+
+        DontDestroyOnLoad(gameObject);
     }
 
     private void LoadResources()

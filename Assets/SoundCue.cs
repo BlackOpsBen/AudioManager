@@ -19,6 +19,11 @@ public class SoundCue : ScriptableObject
     [SerializeField] private float volumeMin = 0.95f;
     [SerializeField] private float volumeMax = 1.05f;
 
+    public AudioClip GetSpecificClip(int index)
+    {
+        return clipOptions[index];
+    }
+
     public AudioClip GetRandomClip()
     {
         int rand = UnityEngine.Random.Range(0, clipOptions.Length);
