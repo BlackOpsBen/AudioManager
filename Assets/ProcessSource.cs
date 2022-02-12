@@ -13,7 +13,7 @@ public class ProcessSource : MonoBehaviour
     SourcePool sourcePool3D;
     Dictionary<string, AudioSource> loopInstances = new Dictionary<string, AudioSource>();
 
-    private void PlaySound(bool is3D, bool isSoundCue, bool specificMixerGroup, bool isLooping, Transform parent = null, string mixerGroupName = "", string uniqueId = "")
+    private void PlaySound(string name, bool is3D, bool isSoundCue, bool specificMixerGroup, bool isLooping, Transform parent = null, string mixerGroupName = "", string uniqueId = "")
     {
         AudioClip clip;
         SoundCue cue;
