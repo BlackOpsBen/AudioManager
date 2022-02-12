@@ -405,6 +405,12 @@ public class AudioManager : MonoBehaviour
 
     #endregion
 
+    #region NEW VERSION
+
+
+
+    #endregion
+
     /// <summary>
     /// Stops the loop instance with the uniqueId.
     /// </summary>
