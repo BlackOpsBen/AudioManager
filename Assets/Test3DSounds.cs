@@ -23,6 +23,13 @@ public class Test3DSounds : MonoBehaviour
 
     public void PlaySoundCue3D()
     {
-        
+        if (mixerGroupName.Equals(string.Empty))
+        {
+            AudioManager.Instance.PlaySoundCue3D(audioClipName, parent);
+        }
+        else
+        {
+            AudioManager.Instance.PlaySoundCue3D(audioClipName, mixerGroupName, parent);
+        }
     }
 }

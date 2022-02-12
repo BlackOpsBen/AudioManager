@@ -71,6 +71,6 @@ public class SoundTestUI : MonoBehaviour
 
     public void StopLoop()
     {
-        AudioManager.Instance.Stop2DLooping(inputFieldUniqueId.text);
+        AudioManager.Instance.StopLooping(inputFieldUniqueId.text);
     }
 }

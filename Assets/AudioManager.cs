@@ -89,7 +89,7 @@ public class AudioManager : MonoBehaviour
         source2D.loop = true;
         source2D.Play();
 
-        Stop2DLooping(uniqueId);
+        StopLooping(uniqueId);
         loopInstances.Add(uniqueId, source2D);
     }
 
@@ -108,13 +108,14 @@ public class AudioManager : MonoBehaviour
         source2D.loop = true;
         source2D.Play();
 
-        Stop2DLooping(uniqueId);
+        StopLooping(uniqueId);
         loopInstances.Add(uniqueId, source2D);
     }
 
     #endregion
 
     #region Play 2D SoundCues
+
     /// <summary>
     /// Plays the named SoundCue from the Resources folder.
     /// </summary>
@@ -178,7 +179,7 @@ public class AudioManager : MonoBehaviour
         source2D.loop = true;
         source2D.Play();
 
-        Stop2DLooping(uniqueId);
+        StopLooping(uniqueId);
         loopInstances.Add(uniqueId, source2D);
     }
 
@@ -208,29 +209,16 @@ public class AudioManager : MonoBehaviour
         source2D.outputAudioMixerGroup = specifiedGroup;
         source2D.Play();
 
-        Stop2DLooping(uniqueId);
+        StopLooping(uniqueId);
         loopInstances.Add(uniqueId, source2D);
     }
     #endregion
 
-    /// <summary>
-    /// Stops the loop instance with the uniqueId.
-    /// </summary>
-    public void Stop2DLooping(string uniqueId)
-    {
-        if (loopInstances.ContainsKey(uniqueId))
-        {
-            AudioSource source2D = loopInstances[uniqueId];
-            loopInstances.Remove(uniqueId);
-            source2D.Stop();
-            source2D.loop = false;
-            source2D.clip = null;
-        }
-    }
-
     #endregion
 
     #region Play 3D Sounds
+
+    #region Play 3D AudioClips
 
     /// <summary>
     /// Plays the named AudioClip from the Resources folder as a 3D sound attached to the provided Transform.
@@ -262,6 +250,9 @@ public class AudioManager : MonoBehaviour
         source3D.PlayOneShot(clip);
     }
 
+    /// <summary>
+    /// Plays and loops the named AudioClip from the Resources folder as a 3D sound attached to the provided Transform.
+    /// </summary>
     public void PlayAudioClip3DLooping(string name, string uniqueId, Transform parent)
     {
         AudioClip clip = Array.Find(audioClips, sound => sound.name == name);
@@ -275,11 +266,100 @@ public class AudioManager : MonoBehaviour
         source3D.loop = true;
         source3D.Play();
 
-        Stop2DLooping(uniqueId);
+        StopLooping(uniqueId);
+        loopInstances.Add(uniqueId, source3D);
+    }
+
+    /// <summary>
+    /// Plays and loops the named AudioClip from the Resources folder and in the specified AudioMixerGroup, as a 3D sound attached to the provided Transform.
+    /// </summary>
+    public void PlayAudioClip3DLooping(string name, string mixerGroupName, string uniqueId, Transform parent)
+    {
+        AudioClip clip = Array.Find(audioClips, sound => sound.name == name);
+        AudioSource source3D = sourcePool3D.GetAudioSource();
+        source3D.transform.parent = parent;
+        source3D.transform.localPosition = Vector3.zero;
+        source3D.outputAudioMixerGroup = GetAudioMixerGroup(mixerGroupName);
+        source3D.volume = 1.0f;
+        source3D.pitch = 1.0f;
+        source3D.clip = clip;
+        source3D.loop = true;
+        source3D.Play();
+
+        StopLooping(uniqueId);
         loopInstances.Add(uniqueId, source3D);
     }
 
     #endregion
+
+    #region Play 3D SoundCues
+
+    /// <summary>
+    /// Plays the named SoundCue from the Resources folder as a 3D sound attached to the provided Transform.
+    /// </summary>
+    public void PlaySoundCue3D(string name, Transform parent)
+    {
+        SoundCue cue = Array.Find(soundCues, sound => sound.name == name);
+        if (cue == null)
+        {
+            Debug.LogWarning("No SoundCue found in Resources folder with the name, \"" + name + ".\"");
+            return;
+        }
+        AudioSource source3D = sourcePool3D.GetAudioSource();
+        source3D.transform.parent = parent;
+        source3D.transform.localPosition = Vector3.zero;
+        source3D.outputAudioMixerGroup = cue.audioMixerGroup;
+        source3D.pitch = cue.GetPitch();
+        source3D.volume = cue.GetVolume();
+        source3D.PlayOneShot(cue.GetRandomClip());
+    }
+
+    /// <summary>
+    /// Plays the named SoundCue from the Resources folder and in the specified AudioMixerGroup, as a 3D sound attached to the provided Transform.
+    /// </summary>
+    public void PlaySoundCue3D(string name, string mixerGroupName, Transform parent)
+    {
+        SoundCue cue = Array.Find(soundCues, sound => sound.name == name);
+        if (cue == null)
+        {
+            Debug.LogWarning("No SoundCue found in Resources folder with the name, \"" + name + ".\"");
+            return;
+        }
+        AudioSource source3D = sourcePool3D.GetAudioSource();
+        source3D.transform.parent = parent;
+        source3D.transform.localPosition = Vector3.zero;
+        source3D.pitch = cue.GetPitch();
+        source3D.volume = cue.GetVolume();
+
+        AudioMixerGroup specifiedGroup = GetAudioMixerGroup(mixerGroupName);
+        if (specifiedGroup == null)
+        {
+            specifiedGroup = cue.audioMixerGroup;
+        }
+
+        source3D.outputAudioMixerGroup = specifiedGroup;
+
+        source3D.PlayOneShot(cue.GetRandomClip());
+    }
+
+    #endregion
+
+    #endregion
+
+    /// <summary>
+    /// Stops the loop instance with the uniqueId.
+    /// </summary>
+    public void StopLooping(string uniqueId)
+    {
+        if (loopInstances.ContainsKey(uniqueId))
+        {
+            AudioSource source = loopInstances[uniqueId];
+            loopInstances.Remove(uniqueId);
+            source.Stop();
+            source.loop = false;
+            source.clip = null;
+        }
+    }
 
     /// <summary>
     /// Gets the named AudioMixerGroup from the AudioMixers from the Resources folder.
