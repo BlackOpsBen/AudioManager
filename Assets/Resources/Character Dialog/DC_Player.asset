@@ -12,5 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2058738eeff334181ae36bda1cb8e364, type: 3}
   m_Name: DC_Player
   m_EditorClassIdentifier: 
-  mixerGroup: {fileID: 0}
-  dialogCategories: []
+  mixerGroup: {fileID: -8771133494957624252, guid: d2ea896840d2000468e17b975dd7d83c, type: 2}
+  dialogCategories:
+  - name: Selected
+    soundCue: {fileID: 11400000, guid: 53fd250e48c433b4ca30a3ee5b7d5bdd, type: 2}
+  - name: Die
+    soundCue: {fileID: 11400000, guid: 47448289ea5c739428adddfe52c7a8c4, type: 2}

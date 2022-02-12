@@ -8,9 +8,23 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance { get; private set; }
 
-    public const int INTERRUPT_NONE = 0;
-    public const int INTERRUPT_SELF = 1;
-    public const int INTERRUPT_ALL = 2;
+    /// <summary>
+    /// Use for low priority dialog that will never happen if ANY character is already talking.
+    /// </summary>
+    public const int INTERRUPT_OVERLAP_NONE = 0;
+    /// <summary>
+    /// Use for low priority dialog that will not play if the character is currently speaking, but will still play concurrently with other speaking characters.
+    /// </summary>
+    public const int INTERRUPT_NONE = 1;
+    /// <summary>
+    /// Use for medium priority dialog that will stop any previous dialog from the character, but all other characters will continue speaking.
+    /// </summary>
+    public const int INTERRUPT_SELF = 2;
+    /// <summary>
+    /// Use for high priority dialog which will cause all currently speaking characters to stop and then the new dialog will play.
+    /// </summary>
+    public const int INTERRUPT_ALL = 3;
+    
 
     private SoundCue[] soundCues;
     private AudioClip[] audioClips;
@@ -18,7 +32,6 @@ public class AudioManager : MonoBehaviour
     private SourcePool sourcePool2D;
     private SourcePool sourcePool3D;
     private Dictionary<string, AudioSource> loopInstances = new Dictionary<string, AudioSource>();
-
     private Dictionary<string, AudioSource> charactersSpeaking = new Dictionary<string, AudioSource>();
 
     private void Awake()
@@ -211,12 +224,15 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     public void PlayDialog(string characterName, string soundCueName, bool is3D = false, Transform parent = null, int INTERRUPT_MODE = INTERRUPT_NONE)
     {
-        if (charactersSpeaking.ContainsKey(characterName))
+        if (charactersSpeaking.ContainsKey(characterName) && charactersSpeaking[characterName].isPlaying)
         {
             switch (INTERRUPT_MODE)
             {
+                case INTERRUPT_OVERLAP_NONE:
+                    CantSpeak(characterName);
+                    break;
                 case INTERRUPT_NONE:
-                    InterruptNone(characterName);
+                    CantSpeak(characterName);
                     break;
                 case INTERRUPT_SELF:
                     InterruptSelf(characterName, soundCueName, is3D, parent);
@@ -225,21 +241,44 @@ public class AudioManager : MonoBehaviour
                     InterruptAll(characterName, soundCueName, is3D, parent);
                     break;
                 default:
-                    InterruptNone(characterName);
+                    CantSpeak(characterName);
                     break;
             }
-            
+
         }
         else
         {
-            PlayAndAddCharacterDialog(characterName, soundCueName, is3D, parent);
+            if (INTERRUPT_MODE == INTERRUPT_OVERLAP_NONE && GetAnyCharacterSpeaking())
+            {
+                CantSpeak(characterName);
+            }
+            else
+            {
+                charactersSpeaking.Remove(characterName);
+                PlayAndAddCharacterDialog(characterName, soundCueName, is3D, parent);
+            }
         }
     }
 
     /// <summary>
-    /// Simply logs that the character is already talking. Does not play the new dialog.
+    /// Returns true if there is any character still speaking.
     /// </summary>
-    private void InterruptNone(string characterName)
+    private bool GetAnyCharacterSpeaking()
+    {
+        foreach (AudioSource character in charactersSpeaking.Values)
+        {
+            if (character.isPlaying)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Simply logs that the character can't speak yet because of the INTERRUPT_MODE used. Does not play the new dialog.
+    /// </summary>
+    private void CantSpeak(string characterName)
     {
         Debug.Log(characterName + "is already speaking. Did not interrupt.");
     }
@@ -251,6 +290,8 @@ public class AudioManager : MonoBehaviour
     {
         Debug.Log(characterName + "is already speaking. Interrupting previous dialog.");
         charactersSpeaking[characterName].Stop();
+        charactersSpeaking.Remove(characterName);
+
         charactersSpeaking.Remove(characterName);
 
         PlayAndAddCharacterDialog(characterName, soundCueName, is3D, parent);
@@ -497,3 +538,5 @@ public class SourcePool
         sources.Remove(source);
     }
 }
+
+// TODO prevent lower priority dialog from starting after a higher priority dialog started.

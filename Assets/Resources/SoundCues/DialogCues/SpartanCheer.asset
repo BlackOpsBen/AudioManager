@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b520ef43ea5b5e46bcc19062dd5d0b8, type: 3}
+  m_Name: SpartanCheer
+  m_EditorClassIdentifier: 
+  clipOptions:
+  - {fileID: 8300000, guid: 7629b8cfa0c7148319c36a11a03fe567, type: 3}
+  - {fileID: 8300000, guid: e1f878d0bddb94a4dbc0f16bc670821c, type: 3}
+  - {fileID: 8300000, guid: 972e962fb0ead48c692ef3910b4af48a, type: 3}
+  - {fileID: 8300000, guid: e8ae2593702fa467a8d2763482cbc87f, type: 3}
+  - {fileID: 8300000, guid: 67ec28ce2dcaa481ba6a6bd5ddf18964, type: 3}
+  - {fileID: 8300000, guid: 72a5c16fc54594f54bb4c1eb5893634c, type: 3}
+  audioMixerGroup: {fileID: 24300002, guid: 5713a6a576b846b4480b1761d5aa92b4, type: 2}
+  enableModulation: 0
+  pitchMin: 0.95
+  pitchMax: 1.05
+  volumeMin: 0.95
+  volumeMax: 1.05

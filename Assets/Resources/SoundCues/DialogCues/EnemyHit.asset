@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b520ef43ea5b5e46bcc19062dd5d0b8, type: 3}
+  m_Name: EnemyHit
+  m_EditorClassIdentifier: 
+  clipOptions:
+  - {fileID: 8300000, guid: e1774809c2aae43539d67a61c589cf63, type: 3}
+  - {fileID: 8300000, guid: 05d1714083aba42b29c6a2ff546a2add, type: 3}
+  - {fileID: 8300000, guid: 4b81fde001ed5468a8a648ec2e8e0f86, type: 3}
+  audioMixerGroup: {fileID: 24300002, guid: 5713a6a576b846b4480b1761d5aa92b4, type: 2}
+  enableModulation: 0
+  pitchMin: 0.95
+  pitchMax: 1.05
+  volumeMin: 0.95
+  volumeMax: 1.05
