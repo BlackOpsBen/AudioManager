@@ -30,23 +30,3 @@ public class DialogManager : MonoBehaviour
 
     }
 }
-
-[System.Serializable]
-public class DialogCharacter
-{
-    public string name;
-    public AudioMixerGroup mixerGroup;
-    public List<DialogCategory> dialogCategories = new List<DialogCategory>();
-}
-
-[System.Serializable]
-public class DialogCategory
-{
-    public DialogCategory(string name)
-    {
-        this.name = name;
-    }
-
-    public string name;
-    public SoundCue soundCue;
-}

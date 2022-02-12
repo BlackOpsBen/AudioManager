@@ -8,13 +8,18 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance { get; private set; }
 
+    public const int INTERRUPT_NONE = 0;
+    public const int INTERRUPT_SELF = 1;
+    public const int INTERRUPT_ALL = 2;
+
     private SoundCue[] soundCues;
     private AudioClip[] audioClips;
     private AudioMixer[] audioMixers;
     private SourcePool sourcePool2D;
+    private SourcePool sourcePool3D;
     private Dictionary<string, AudioSource> loopInstances = new Dictionary<string, AudioSource>();
 
-    private SourcePool sourcePool3D;
+    private Dictionary<string, AudioSource> charactersSpeaking = new Dictionary<string, AudioSource>();
 
     private void Awake()
     {
@@ -199,9 +204,90 @@ public class AudioManager : MonoBehaviour
 
     #endregion
 
+    #region Play Dialog
+
+    /// <summary>
+    /// Attempt to play dialog from a specific character. Plays as a 2D sound unless is3D is set to true, in which case it is attached to the provided parent. The INTERRUPT_MODE determines whether the character can interrupt itself and/or other currently speaking characters. Uses the AudioMixerGroup of the specified SoundCue.
+    /// </summary>
+    public void PlayDialog(string characterName, string soundCueName, bool is3D = false, Transform parent = null, int INTERRUPT_MODE = INTERRUPT_NONE)
+    {
+        if (charactersSpeaking.ContainsKey(characterName))
+        {
+            switch (INTERRUPT_MODE)
+            {
+                case INTERRUPT_NONE:
+                    InterruptNone(characterName);
+                    break;
+                case INTERRUPT_SELF:
+                    InterruptSelf(characterName, soundCueName, is3D, parent);
+                    break;
+                case INTERRUPT_ALL:
+                    InterruptAll(characterName, soundCueName, is3D, parent);
+                    break;
+                default:
+                    InterruptNone(characterName);
+                    break;
+            }
+            
+        }
+        else
+        {
+            PlayAndAddCharacterDialog(characterName, soundCueName, is3D, parent);
+        }
+    }
+
+    /// <summary>
+    /// Simply logs that the character is already talking. Does not play the new dialog.
+    /// </summary>
+    private void InterruptNone(string characterName)
+    {
+        Debug.Log(characterName + "is already speaking. Did not interrupt.");
+    }
+
+    /// <summary>
+    /// Stops the currently playing dialog by the specified character before playing the new dialog.
+    /// </summary>
+    private void InterruptSelf(string characterName, string soundCueName, bool is3D, Transform parent)
+    {
+        Debug.Log(characterName + "is already speaking. Interrupting previous dialog.");
+        charactersSpeaking[characterName].Stop();
+        charactersSpeaking.Remove(characterName);
+
+        PlayAndAddCharacterDialog(characterName, soundCueName, is3D, parent);
+    }
+
+    /// <summary>
+    /// Stops all currently speaking characters and then plays the new dialog.
+    /// </summary>
+    private void InterruptAll(string characterName, string soundCueName, bool is3D, Transform parent)
+    {
+        Debug.Log(characterName + "Interrupting ALL characters!");
+        foreach (AudioSource charSource in charactersSpeaking.Values)
+        {
+            charSource.Stop();
+        }
+        charactersSpeaking.Clear();
+
+        PlayAndAddCharacterDialog(characterName, soundCueName, is3D, parent);
+    }
+
+    /// <summary>
+    /// Actually plays the dialog and saves a reference to the AudioSource in the Dictionary so it can be interrupted later if needed.
+    /// </summary>
+    private void PlayAndAddCharacterDialog(string characterName, string soundCueName, bool is3D, Transform parent)
+    {
+        AudioSource source = PlaySound(soundCueName, is3D, true, false, false, "", "", parent);
+        charactersSpeaking.Add(characterName, source);
+    }
+
+    #endregion
+
     #region Helper Functions
 
-    private void PlaySound(string name, bool is3D, bool isSoundCue, bool specificMixerGroup, bool isLooping, string mixerGroupName = "", string uniqueId = "", Transform parent = null)
+    /// <summary>
+    /// Processes an AudioSource from a pool to play the sound.
+    /// </summary>
+    private AudioSource PlaySound(string name, bool is3D, bool isSoundCue, bool specificMixerGroup, bool isLooping, string mixerGroupName = "", string uniqueId = "", Transform parent = null)
     {
         AudioClip clip;
         SoundCue cue;
@@ -255,7 +341,7 @@ public class AudioManager : MonoBehaviour
             if (cue == null)
             {
                 Debug.LogWarning("No SoundCue found in Resources folder with the name, \"" + name + ".\"");
-                return;
+                return source;
             }
             source.pitch = cue.GetPitch();
             source.volume = cue.GetVolume();
@@ -288,8 +374,13 @@ public class AudioManager : MonoBehaviour
             #endregion
         }
         #endregion
+
+        return source;
     }
 
+    /// <summary>
+    /// Plays the sound as a loop and saves a reference to the AudioSource in loopInstances.
+    /// </summary>
     private void PlayLoop(string uniqueId, AudioClip clip, AudioSource source)
     {
         source.clip = clip;
@@ -340,6 +431,9 @@ public class AudioManager : MonoBehaviour
         return specifiedGroup;
     }
 
+    /// <summary>
+    /// The RemoveSourceOnDestroy component of any 3D sounds played will automatically call this when their parent object is destroyed. This removes them from the list of AudioSources.
+    /// </summary>
     public void RemoveDestroyed3DSound(AudioSource source)
     {
         sourcePool3D.RemoveAudioSource(source);
@@ -348,6 +442,9 @@ public class AudioManager : MonoBehaviour
     #endregion
 }
 
+/// <summary>
+/// A pool of AudioSources.
+/// </summary>
 public class SourcePool
 {
     private List<AudioSource> sources = new List<AudioSource>();
@@ -400,5 +497,3 @@ public class SourcePool
         sources.Remove(source);
     }
 }
-
-// TODO limit dialog
