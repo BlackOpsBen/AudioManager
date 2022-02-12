@@ -69,7 +69,7 @@ public class AudioManager : MonoBehaviour
     {
         AudioClip clip = Array.Find(audioClips, sound => sound.name == name);
         AudioSource source2D = sourcePool2D.GetAudioSource();
-        source2D.outputAudioMixerGroup = GetAudioMixerGroup(mixerGroupName);
+        source2D.outputAudioMixerGroup = FindAudioMixerGroup(mixerGroupName);
         source2D.volume = 1.0f;
         source2D.pitch = 1.0f;
         source2D.PlayOneShot(clip);
@@ -101,7 +101,7 @@ public class AudioManager : MonoBehaviour
         AudioClip clip = Array.Find(audioClips, sound => sound.name == name);
         AudioSource source2D = sourcePool2D.GetAudioSource();
 
-        source2D.outputAudioMixerGroup = GetAudioMixerGroup(mixerGroupName);
+        source2D.outputAudioMixerGroup = FindAudioMixerGroup(mixerGroupName);
         source2D.volume = 1.0f;
         source2D.pitch = 1.0f;
         source2D.clip = clip;
@@ -128,7 +128,7 @@ public class AudioManager : MonoBehaviour
             return;
         }
         AudioSource source2D = sourcePool2D.GetAudioSource();
-        source2D.outputAudioMixerGroup = cue.audioMixerGroup;
+        source2D.outputAudioMixerGroup = cue.GetAudioMixerGroup();
         source2D.pitch = cue.GetPitch();
         source2D.volume = cue.GetVolume();
         source2D.PlayOneShot(cue.GetRandomClip());
@@ -149,10 +149,10 @@ public class AudioManager : MonoBehaviour
         source2D.pitch = cue.GetPitch();
         source2D.volume = cue.GetVolume();
 
-        AudioMixerGroup specifiedGroup = GetAudioMixerGroup(mixerGroupName);
+        AudioMixerGroup specifiedGroup = FindAudioMixerGroup(mixerGroupName);
         if (specifiedGroup == null)
         {
-            specifiedGroup = cue.audioMixerGroup;
+            specifiedGroup = cue.GetAudioMixerGroup();
         }
 
         source2D.outputAudioMixerGroup = specifiedGroup;
@@ -172,7 +172,7 @@ public class AudioManager : MonoBehaviour
             return;
         }
         AudioSource source2D = sourcePool2D.GetAudioSource();
-        source2D.outputAudioMixerGroup = cue.audioMixerGroup;
+        source2D.outputAudioMixerGroup = cue.GetAudioMixerGroup();
         source2D.pitch = cue.GetPitch();
         source2D.volume = cue.GetVolume();
         source2D.clip = cue.GetRandomClip();
@@ -200,10 +200,10 @@ public class AudioManager : MonoBehaviour
         source2D.clip = cue.GetRandomClip();
         source2D.loop = true;
 
-        AudioMixerGroup specifiedGroup = GetAudioMixerGroup(mixerGroupName);
+        AudioMixerGroup specifiedGroup = FindAudioMixerGroup(mixerGroupName);
         if (specifiedGroup == null)
         {
-            specifiedGroup = cue.audioMixerGroup;
+            specifiedGroup = cue.GetAudioMixerGroup();
         }
 
         source2D.outputAudioMixerGroup = specifiedGroup;
@@ -244,7 +244,7 @@ public class AudioManager : MonoBehaviour
         AudioSource source3D = sourcePool3D.GetAudioSource();
         source3D.transform.parent = parent;
         source3D.transform.localPosition = Vector3.zero;
-        source3D.outputAudioMixerGroup = GetAudioMixerGroup(mixerGroupName);
+        source3D.outputAudioMixerGroup = FindAudioMixerGroup(mixerGroupName);
         source3D.volume = 1.0f;
         source3D.pitch = 1.0f;
         source3D.PlayOneShot(clip);
@@ -279,7 +279,7 @@ public class AudioManager : MonoBehaviour
         AudioSource source3D = sourcePool3D.GetAudioSource();
         source3D.transform.parent = parent;
         source3D.transform.localPosition = Vector3.zero;
-        source3D.outputAudioMixerGroup = GetAudioMixerGroup(mixerGroupName);
+        source3D.outputAudioMixerGroup = FindAudioMixerGroup(mixerGroupName);
         source3D.volume = 1.0f;
         source3D.pitch = 1.0f;
         source3D.clip = clip;
@@ -308,7 +308,7 @@ public class AudioManager : MonoBehaviour
         AudioSource source3D = sourcePool3D.GetAudioSource();
         source3D.transform.parent = parent;
         source3D.transform.localPosition = Vector3.zero;
-        source3D.outputAudioMixerGroup = cue.audioMixerGroup;
+        source3D.outputAudioMixerGroup = cue.GetAudioMixerGroup();
         source3D.pitch = cue.GetPitch();
         source3D.volume = cue.GetVolume();
         source3D.PlayOneShot(cue.GetRandomClip());
@@ -331,16 +331,75 @@ public class AudioManager : MonoBehaviour
         source3D.pitch = cue.GetPitch();
         source3D.volume = cue.GetVolume();
 
-        AudioMixerGroup specifiedGroup = GetAudioMixerGroup(mixerGroupName);
+        AudioMixerGroup specifiedGroup = FindAudioMixerGroup(mixerGroupName);
         if (specifiedGroup == null)
         {
-            specifiedGroup = cue.audioMixerGroup;
+            specifiedGroup = cue.GetAudioMixerGroup();
         }
 
         source3D.outputAudioMixerGroup = specifiedGroup;
 
         source3D.PlayOneShot(cue.GetRandomClip());
     }
+
+    /// <summary>
+    /// Plays and loops the named SoundCue from the Resources folder as a 3D sound attached to the provided Transform.
+    /// </summary>
+    public void PlaySoundCue3DLooping(string name, string uniqueId, Transform parent)
+    {
+        SoundCue cue = Array.Find(soundCues, sound => sound.name == name);
+        if (cue == null)
+        {
+            Debug.LogWarning("No SoundCue found in Resources folder with the name, \"" + name + ".\"");
+            return;
+        }
+        AudioSource source3D = sourcePool3D.GetAudioSource();
+        source3D.transform.parent = parent;
+        source3D.transform.localPosition = Vector3.zero;
+        source3D.outputAudioMixerGroup = cue.GetAudioMixerGroup();
+        source3D.volume = cue.GetVolume();
+        source3D.pitch = cue.GetPitch();
+        source3D.clip = cue.GetRandomClip();
+        source3D.loop = true;
+        source3D.Play();
+
+        StopLooping(uniqueId);
+        loopInstances.Add(uniqueId, source3D);
+    }
+
+    /// <summary>
+    /// Plays and loops the named SoundCue from the Resources folder and in the specified AudioMixerGroup, as a 3D sound attached to the provided Transform.
+    /// </summary>
+    public void PlaySoundCue3DLooping(string name, string mixerGroupName, string uniqueId, Transform parent)
+    {
+        SoundCue cue = Array.Find(soundCues, sound => sound.name == name);
+        if (cue == null)
+        {
+            Debug.LogWarning("No SoundCue found in Resources folder with the name, \"" + name + ".\"");
+            return;
+        }
+        AudioSource source3D = sourcePool3D.GetAudioSource();
+        source3D.transform.parent = parent;
+        source3D.transform.localPosition = Vector3.zero;
+        source3D.volume = cue.GetVolume();
+        source3D.pitch = cue.GetPitch();
+
+        AudioMixerGroup specifiedGroup = FindAudioMixerGroup(mixerGroupName);
+        if (specifiedGroup == null)
+        {
+            specifiedGroup = cue.GetAudioMixerGroup();
+        }
+
+        source3D.outputAudioMixerGroup = specifiedGroup;
+
+        source3D.clip = cue.GetRandomClip();
+        source3D.loop = true;
+        source3D.Play();
+
+        StopLooping(uniqueId);
+        loopInstances.Add(uniqueId, source3D);
+    }
+
 
     #endregion
 
@@ -362,9 +421,9 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Gets the named AudioMixerGroup from the AudioMixers from the Resources folder.
+    /// Finds the named AudioMixerGroup from the AudioMixers from the Resources folder.
     /// </summary>
-    private AudioMixerGroup GetAudioMixerGroup(string mixerGroupName)
+    private AudioMixerGroup FindAudioMixerGroup(string mixerGroupName)
     {
         AudioMixerGroup specifiedGroup = null;
         foreach (AudioMixer mixer in audioMixers)
