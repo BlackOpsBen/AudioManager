@@ -515,7 +515,6 @@ public class AudioManager : MonoBehaviour
 
     private void PlayLoop(string uniqueId, AudioClip clip, AudioSource source)
     {
-        Debug.Log("Play Loop");
         source.clip = clip;
         source.loop = true;
         source.Play();
@@ -531,7 +530,6 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     public void StopLooping(string uniqueId)
     {
-        Debug.Log("Stop Loop");
         if (loopInstances.ContainsKey(uniqueId))
         {
             AudioSource source = loopInstances[uniqueId];
