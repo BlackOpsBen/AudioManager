@@ -360,3 +360,7 @@ public class SourcePool
  * unless the transform has OnDestroy and stops it's loop and de-childs the sound3D gameObject before killing itself.
  * StopLoop should unparent the gameobject in case the parent gets destroyed.
 */
+
+// TODO limit dialog
+
+// TODO add option to sequentially play all sounds in a group.
