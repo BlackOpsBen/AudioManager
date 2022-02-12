@@ -14,8 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   clipOptions:
   - {fileID: 8300000, guid: f6d44bf29bf71ee43bd9facdf58716d3, type: 3}
-  - {fileID: 8300000, guid: 7b85124190528904ab8220c9eed49777, type: 3}
-  - {fileID: 8300000, guid: 62badb90d5c5b14428ee58bc86994d16, type: 3}
   audioMixerGroup: {fileID: -5827663097423994339, guid: 5713a6a576b846b4480b1761d5aa92b4, type: 2}
   modulate: 1
   pitchMin: 0.95

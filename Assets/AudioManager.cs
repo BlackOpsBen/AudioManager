@@ -54,12 +54,6 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     public void PlayAudioClip2D(string name)
     {
-        //AudioClip clip = Array.Find(audioClips, sound => sound.name == name);
-        //AudioSource source2D = sourcePool2D.GetAudioSource();
-        //source2D.outputAudioMixerGroup = null;
-        //source2D.volume = 1.0f;
-        //source2D.pitch = 1.0f;
-        //source2D.PlayOneShot(clip);
         PlaySound(name, false, false, false, false);
     }
 
@@ -68,12 +62,6 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     public void PlayAudioClip2D(string name, string mixerGroupName)
     {
-        //AudioClip clip = Array.Find(audioClips, sound => sound.name == name);
-        //AudioSource source2D = sourcePool2D.GetAudioSource();
-        //source2D.outputAudioMixerGroup = FindAudioMixerGroup(mixerGroupName);
-        //source2D.volume = 1.0f;
-        //source2D.pitch = 1.0f;
-        //source2D.PlayOneShot(clip);
         PlaySound(name, false, false, true, false, mixerGroupName);
     }
 
@@ -82,17 +70,6 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     public void PlayAudioClip2DLooping(string name, string uniqueId)
     {
-        //AudioClip clip = Array.Find(audioClips, sound => sound.name == name);
-        //AudioSource source2D = sourcePool2D.GetAudioSource();
-        //source2D.outputAudioMixerGroup = null;
-        //source2D.volume = 1.0f;
-        //source2D.pitch = 1.0f;
-        //source2D.clip = clip;
-        //source2D.loop = true;
-        //source2D.Play();
-
-        //StopLooping(uniqueId);
-        //loopInstances.Add(uniqueId, source2D);
         PlaySound(name, false, false, false, true, "", uniqueId);
     }
 
@@ -101,18 +78,6 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     public void PlayAudioClip2DLooping(string name, string mixerGroupName, string uniqueId)
     {
-        //AudioClip clip = Array.Find(audioClips, sound => sound.name == name);
-        //AudioSource source2D = sourcePool2D.GetAudioSource();
-
-        //source2D.outputAudioMixerGroup = FindAudioMixerGroup(mixerGroupName);
-        //source2D.volume = 1.0f;
-        //source2D.pitch = 1.0f;
-        //source2D.clip = clip;
-        //source2D.loop = true;
-        //source2D.Play();
-
-        //StopLooping(uniqueId);
-        //loopInstances.Add(uniqueId, source2D);
         PlaySound(name, false, false, true, true, mixerGroupName, uniqueId);
     }
 
@@ -125,17 +90,6 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     public void PlaySoundCue2D(string name)
     {
-        //SoundCue cue = Array.Find(soundCues, sound => sound.name == name);
-        //if (cue == null)
-        //{
-        //    Debug.LogWarning("No SoundCue found in Resources folder with the name, \"" + name + ".\"");
-        //    return;
-        //}
-        //AudioSource source2D = sourcePool2D.GetAudioSource();
-        //source2D.outputAudioMixerGroup = cue.GetAudioMixerGroup();
-        //source2D.pitch = cue.GetPitch();
-        //source2D.volume = cue.GetVolume();
-        //source2D.PlayOneShot(cue.GetRandomClip());
         PlaySound(name, false, true, false, false);
     }
 
@@ -144,25 +98,6 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     public void PlaySoundCue2D(string name, string mixerGroupName)
     {
-        //SoundCue cue = Array.Find(soundCues, sound => sound.name == name);
-        //if (cue == null)
-        //{
-        //    Debug.LogWarning("No SoundCue found in Resources folder with the name, \"" + name + ".\"");
-        //    return;
-        //}
-        //AudioSource source2D = sourcePool2D.GetAudioSource();
-        //source2D.pitch = cue.GetPitch();
-        //source2D.volume = cue.GetVolume();
-
-        //AudioMixerGroup specifiedGroup = FindAudioMixerGroup(mixerGroupName);
-        //if (specifiedGroup == null)
-        //{
-        //    specifiedGroup = cue.GetAudioMixerGroup();
-        //}
-
-        //source2D.outputAudioMixerGroup = specifiedGroup;
-
-        //source2D.PlayOneShot(cue.GetRandomClip());
         PlaySound(name, false, true, true, false, mixerGroupName, "");
     }
 
@@ -171,22 +106,6 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     public void PlaySoundCue2DLooping(string name, string uniqueId)
     {
-        //SoundCue cue = Array.Find(soundCues, sound => sound.name == name);
-        //if (cue == null)
-        //{
-        //    Debug.LogWarning("No SoundCue found in Resources folder with the name, \"" + name + "\"");
-        //    return;
-        //}
-        //AudioSource source2D = sourcePool2D.GetAudioSource();
-        //source2D.outputAudioMixerGroup = cue.GetAudioMixerGroup();
-        //source2D.pitch = cue.GetPitch();
-        //source2D.volume = cue.GetVolume();
-        //source2D.clip = cue.GetRandomClip();
-        //source2D.loop = true;
-        //source2D.Play();
-
-        //StopLooping(uniqueId);
-        //loopInstances.Add(uniqueId, source2D);
         PlaySound(name, false, true, false, true, "", uniqueId);
     }
 
@@ -195,29 +114,6 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     public void PlaySoundCue2DLooping(string name, string mixerGroupName, string uniqueId)
     {
-        //SoundCue cue = Array.Find(soundCues, sound => sound.name == name);
-        //if (cue == null)
-        //{
-        //    Debug.LogWarning("No SoundCue found in Resources folder with the name, \"" + name + "\"");
-        //    return;
-        //}
-        //AudioSource source2D = sourcePool2D.GetAudioSource();
-        //source2D.pitch = cue.GetPitch();
-        //source2D.volume = cue.GetVolume();
-        //source2D.clip = cue.GetRandomClip();
-        //source2D.loop = true;
-
-        //AudioMixerGroup specifiedGroup = FindAudioMixerGroup(mixerGroupName);
-        //if (specifiedGroup == null)
-        //{
-        //    specifiedGroup = cue.GetAudioMixerGroup();
-        //}
-
-        //source2D.outputAudioMixerGroup = specifiedGroup;
-        //source2D.Play();
-
-        //StopLooping(uniqueId);
-        //loopInstances.Add(uniqueId, source2D);
         PlaySound(name, false, true, true, true, mixerGroupName, uniqueId);
     }
     #endregion
@@ -233,14 +129,6 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     public void PlayAudioClip3D(string name, Transform parent)
     {
-        //AudioClip clip = Array.Find(audioClips, sound => sound.name == name);
-        //AudioSource source3D = sourcePool3D.GetAudioSource();
-        //source3D.transform.parent = parent;
-        //source3D.transform.localPosition = Vector3.zero;
-        //source3D.outputAudioMixerGroup = null;
-        //source3D.volume = 1.0f;
-        //source3D.pitch = 1.0f;
-        //source3D.PlayOneShot(clip);
         PlaySound(name, true, false, false, false, "", "", parent);
     }
 
@@ -249,14 +137,6 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     public void PlayAudioClip3D(string name, string mixerGroupName, Transform parent)
     {
-        //AudioClip clip = Array.Find(audioClips, sound => sound.name == name);
-        //AudioSource source3D = sourcePool3D.GetAudioSource();
-        //source3D.transform.parent = parent;
-        //source3D.transform.localPosition = Vector3.zero;
-        //source3D.outputAudioMixerGroup = FindAudioMixerGroup(mixerGroupName);
-        //source3D.volume = 1.0f;
-        //source3D.pitch = 1.0f;
-        //source3D.PlayOneShot(clip);
         PlaySound(name, true, false, true, false, mixerGroupName, "", parent);
     }
 
@@ -265,19 +145,6 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     public void PlayAudioClip3DLooping(string name, string uniqueId, Transform parent)
     {
-        //AudioClip clip = Array.Find(audioClips, sound => sound.name == name);
-        //AudioSource source3D = sourcePool3D.GetAudioSource();
-        //source3D.transform.parent = parent;
-        //source3D.transform.localPosition = Vector3.zero;
-        //source3D.outputAudioMixerGroup = null;
-        //source3D.volume = 1.0f;
-        //source3D.pitch = 1.0f;
-        //source3D.clip = clip;
-        //source3D.loop = true;
-        //source3D.Play();
-
-        //StopLooping(uniqueId);
-        //loopInstances.Add(uniqueId, source3D);
         PlaySound(name, true, false, false, true, "", uniqueId, parent);
     }
 
@@ -286,19 +153,6 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     public void PlayAudioClip3DLooping(string name, string mixerGroupName, string uniqueId, Transform parent)
     {
-        //AudioClip clip = Array.Find(audioClips, sound => sound.name == name);
-        //AudioSource source3D = sourcePool3D.GetAudioSource();
-        //source3D.transform.parent = parent;
-        //source3D.transform.localPosition = Vector3.zero;
-        //source3D.outputAudioMixerGroup = FindAudioMixerGroup(mixerGroupName);
-        //source3D.volume = 1.0f;
-        //source3D.pitch = 1.0f;
-        //source3D.clip = clip;
-        //source3D.loop = true;
-        //source3D.Play();
-
-        //StopLooping(uniqueId);
-        //loopInstances.Add(uniqueId, source3D);
         PlaySound(name, true, false, true, true, mixerGroupName, uniqueId, parent);
     }
 
@@ -311,19 +165,6 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     public void PlaySoundCue3D(string name, Transform parent)
     {
-        //SoundCue cue = Array.Find(soundCues, sound => sound.name == name);
-        //if (cue == null)
-        //{
-        //    Debug.LogWarning("No SoundCue found in Resources folder with the name, \"" + name + ".\"");
-        //    return;
-        //}
-        //AudioSource source3D = sourcePool3D.GetAudioSource();
-        //source3D.transform.parent = parent;
-        //source3D.transform.localPosition = Vector3.zero;
-        //source3D.outputAudioMixerGroup = cue.GetAudioMixerGroup();
-        //source3D.pitch = cue.GetPitch();
-        //source3D.volume = cue.GetVolume();
-        //source3D.PlayOneShot(cue.GetRandomClip());
         PlaySound(name, true, true, false, false, "", "", parent);
     }
 
@@ -332,27 +173,6 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     public void PlaySoundCue3D(string name, string mixerGroupName, Transform parent)
     {
-        //SoundCue cue = Array.Find(soundCues, sound => sound.name == name);
-        //if (cue == null)
-        //{
-        //    Debug.LogWarning("No SoundCue found in Resources folder with the name, \"" + name + ".\"");
-        //    return;
-        //}
-        //AudioSource source3D = sourcePool3D.GetAudioSource();
-        //source3D.transform.parent = parent;
-        //source3D.transform.localPosition = Vector3.zero;
-        //source3D.pitch = cue.GetPitch();
-        //source3D.volume = cue.GetVolume();
-
-        //AudioMixerGroup specifiedGroup = FindAudioMixerGroup(mixerGroupName);
-        //if (specifiedGroup == null)
-        //{
-        //    specifiedGroup = cue.GetAudioMixerGroup();
-        //}
-
-        //source3D.outputAudioMixerGroup = specifiedGroup;
-
-        //source3D.PlayOneShot(cue.GetRandomClip());
         PlaySound(name, true, true, true, false, mixerGroupName, "", parent);
     }
 
@@ -361,24 +181,6 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     public void PlaySoundCue3DLooping(string name, string uniqueId, Transform parent)
     {
-        //SoundCue cue = Array.Find(soundCues, sound => sound.name == name);
-        //if (cue == null)
-        //{
-        //    Debug.LogWarning("No SoundCue found in Resources folder with the name, \"" + name + ".\"");
-        //    return;
-        //}
-        //AudioSource source3D = sourcePool3D.GetAudioSource();
-        //source3D.transform.parent = parent;
-        //source3D.transform.localPosition = Vector3.zero;
-        //source3D.outputAudioMixerGroup = cue.GetAudioMixerGroup();
-        //source3D.volume = cue.GetVolume();
-        //source3D.pitch = cue.GetPitch();
-        //source3D.clip = cue.GetRandomClip();
-        //source3D.loop = true;
-        //source3D.Play();
-
-        //StopLooping(uniqueId);
-        //loopInstances.Add(uniqueId, source3D);
         PlaySound(name, true, true, false, true, "", uniqueId, parent);
     }
 
@@ -387,33 +189,6 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     public void PlaySoundCue3DLooping(string name, string mixerGroupName, string uniqueId, Transform parent)
     {
-        //SoundCue cue = Array.Find(soundCues, sound => sound.name == name);
-        //if (cue == null)
-        //{
-        //    Debug.LogWarning("No SoundCue found in Resources folder with the name, \"" + name + ".\"");
-        //    return;
-        //}
-        //AudioSource source3D = sourcePool3D.GetAudioSource();
-        //source3D.transform.parent = parent;
-        //source3D.transform.localPosition = Vector3.zero;
-        //source3D.volume = cue.GetVolume();
-        //source3D.pitch = cue.GetPitch();
-
-        //AudioMixerGroup specifiedGroup = FindAudioMixerGroup(mixerGroupName);
-        //if (specifiedGroup == null)
-        //{
-        //    specifiedGroup = cue.GetAudioMixerGroup();
-        //}
-
-        //source3D.outputAudioMixerGroup = specifiedGroup;
-
-        //source3D.clip = cue.GetRandomClip();
-        //source3D.loop = true;
-        //source3D.Play();
-
-        //StopLooping(uniqueId);
-        //loopInstances.Add(uniqueId, source3D);
-
         PlaySound(name, true, true, true, true, mixerGroupName, uniqueId, parent);
     }
 
@@ -422,7 +197,7 @@ public class AudioManager : MonoBehaviour
 
     #endregion
 
-    #region NEW VERSION
+    #region Private Functions
 
     private void PlaySound(string name, bool is3D, bool isSoundCue, bool specificMixerGroup, bool isLooping, string mixerGroupName = "", string uniqueId = "", Transform parent = null)
     {
@@ -523,8 +298,6 @@ public class AudioManager : MonoBehaviour
         loopInstances.Add(uniqueId, source);
     }
 
-    #endregion
-
     /// <summary>
     /// Stops the loop instance with the uniqueId.
     /// </summary>
@@ -564,6 +337,8 @@ public class AudioManager : MonoBehaviour
 
         return specifiedGroup;
     }
+
+    #endregion
 }
 
 public class SourcePool

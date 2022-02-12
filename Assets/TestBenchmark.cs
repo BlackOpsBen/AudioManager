@@ -8,18 +8,18 @@ public class TestBenchmark : MonoBehaviour
 
     private void Start()
     {
-        AudioManager.Instance.PlayAudioClip3DLooping("sword", "acLoop3D", transform);
-        AudioManager.Instance.PlaySoundCue3DLooping("Hit", "scLoop3D", transform);
+        AudioManager.Instance.PlayAudioClip2DLooping("repair", "scLoop3D1");
+        AudioManager.Instance.PlayAudioClip2DLooping("sword", "scLoop3D2");
     }
 
     private void Update()
     {
         if (currentFrame%10 == 0)
         {
-            AudioManager.Instance.PlaySoundCue3D("sword", "SFX", transform);
+            AudioManager.Instance.PlayAudioClip2D("sword", "SFX");
         }
         currentFrame++;
-        if (currentFrame == 1000)
+        if (currentFrame == 10000)
         {
             Debug.LogError("Current frame: " + currentFrame + ", Total time: " + Time.time + ".");
         }
