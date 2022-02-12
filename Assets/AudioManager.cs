@@ -197,7 +197,7 @@ public class AudioManager : MonoBehaviour
 
     #endregion
 
-    #region Private Functions
+    #region Helper Functions
 
     private void PlaySound(string name, bool is3D, bool isSoundCue, bool specificMixerGroup, bool isLooping, string mixerGroupName = "", string uniqueId = "", Transform parent = null)
     {
@@ -338,6 +338,11 @@ public class AudioManager : MonoBehaviour
         return specifiedGroup;
     }
 
+    public void RemoveDestroyed3DSound(AudioSource source)
+    {
+        sourcePool3D.RemoveAudioSource(source);
+    }
+
     #endregion
 }
 
@@ -380,21 +385,18 @@ public class SourcePool
         }
         else
         {
-            GameObject newGameObject = new GameObject("Sound3D");
+            GameObject newGameObject = new GameObject("Sound3D", typeof(RemoveSourceOnDestroy));
             newSource = newGameObject.AddComponent<AudioSource>();
             newSource.spatialBlend = 1.0f;
         }
         sources.Add(newSource);
         return newSource;
     }
+
+    public void RemoveAudioSource(AudioSource source)
+    {
+        sources.Remove(source);
+    }
 }
 
-/* TODO Prevent null ref if Sound3D parent was destroyed. Subrscibe to parent OnDestroy to unparent itself?
- * Can't attach to a transform because it would prevent being able to stop a loop attached,
- * unless the transform has OnDestroy and stops it's loop and de-childs the sound3D gameObject before killing itself.
- * StopLoop should unparent the gameobject in case the parent gets destroyed.
-*/
-
 // TODO limit dialog
-
-// TODO add option to sequentially play all sounds in a group.
