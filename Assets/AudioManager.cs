@@ -21,9 +21,11 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     public const int INTERRUPT_SELF = 2;
     /// <summary>
-    /// Use for high priority dialog which will cause all currently speaking characters to stop and then the new dialog will play.
+    /// Use for high priority dialog which will cause all currently speaking characters to stop and then the new dialog will play. All other interrupt modes will not be allowed to play while this dialog is playing.
     /// </summary>
     public const int INTERRUPT_ALL = 3;
+
+    private string priorityCharacter;
     
 
     private SoundCue[] soundCues;
@@ -220,48 +222,82 @@ public class AudioManager : MonoBehaviour
     #region Play Dialog
 
     /// <summary>
-    /// Attempt to play dialog from a specific character. Plays as a 2D sound unless is3D is set to true, in which case it is attached to the provided parent. The INTERRUPT_MODE determines whether the character can interrupt itself and/or other currently speaking characters. Uses the AudioMixerGroup of the specified SoundCue.
+    /// Attempt to play dialog from a specific character. Plays as a 2D sound unless is3D is set to true, in which case it is attached to the provided parent. The INTERRUPT_MODE determines whether the character can interrupt itself and/or other currently speaking characters. Uses the AudioMixerGroup of the specified SoundCue. Returns true/false if the dialog actually played.
     /// </summary>
-    public void PlayDialog(string characterName, string soundCueName, bool is3D = false, Transform parent = null, int INTERRUPT_MODE = INTERRUPT_NONE)
+    public bool PlayDialog(string characterName, string soundCueName, bool is3D = false, Transform parent = null, int INTERRUPT_MODE = INTERRUPT_NONE)
     {
-        if (charactersSpeaking.ContainsKey(characterName) && charactersSpeaking[characterName].isPlaying)
-        {
-            switch (INTERRUPT_MODE)
-            {
-                case INTERRUPT_OVERLAP_NONE:
-                    CantSpeak(characterName);
-                    break;
-                case INTERRUPT_NONE:
-                    CantSpeak(characterName);
-                    break;
-                case INTERRUPT_SELF:
-                    InterruptSelf(characterName, soundCueName, is3D, parent);
-                    break;
-                case INTERRUPT_ALL:
-                    InterruptAll(characterName, soundCueName, is3D, parent);
-                    break;
-                default:
-                    CantSpeak(characterName);
-                    break;
-            }
 
+        switch (INTERRUPT_MODE)
+        {
+            case INTERRUPT_OVERLAP_NONE:
+                if (!GetAnyCharacterSpeaking())
+                {
+                    PlayAndAddCharacterDialog(characterName, soundCueName, is3D, parent);
+                    return true;
+                }
+                return false;
+            case INTERRUPT_NONE:
+                if (!GetThisCharacterSpeaking(characterName) && !GetPriorityDialogSpeaking())
+                {
+                    PlayAndAddCharacterDialog(characterName, soundCueName, is3D, parent);
+                    return true;
+                }
+                return false;
+            case INTERRUPT_SELF:
+                if (!GetPriorityDialogSpeaking())
+                {
+                    PlayAndAddCharacterDialog(characterName, soundCueName, is3D, parent);
+                    return true;
+                }
+                return false;
+            case INTERRUPT_ALL:
+                foreach (AudioSource charSource in charactersSpeaking.Values)
+                {
+                    charSource.Stop();
+                }
+                charactersSpeaking.Clear();
+                PlayAndAddCharacterDialog(characterName, soundCueName, is3D, parent);
+                priorityCharacter = characterName;
+                return true;
+            default:
+                if (!GetAnyCharacterSpeaking())
+                {
+                    PlayAndAddCharacterDialog(characterName, soundCueName, is3D, parent);
+                    return true;
+                }
+                return false;
+        }
+    }
+
+    #endregion
+
+    #region Helper Functions
+
+    /// <summary>
+    /// Returns true if there is a high-priority (interrupt mode: INTERRUPT_ALL) dialog currently speaking.
+    /// </summary>
+    private bool GetPriorityDialogSpeaking()
+    {
+        if (priorityCharacter == null)
+        {
+            return false;
         }
         else
         {
-            if (INTERRUPT_MODE == INTERRUPT_OVERLAP_NONE && GetAnyCharacterSpeaking())
-            {
-                CantSpeak(characterName);
-            }
-            else
-            {
-                charactersSpeaking.Remove(characterName);
-                PlayAndAddCharacterDialog(characterName, soundCueName, is3D, parent);
-            }
+            return charactersSpeaking.ContainsKey(priorityCharacter) && charactersSpeaking[priorityCharacter].isPlaying;
         }
     }
 
     /// <summary>
-    /// Returns true if there is any character still speaking.
+    /// Returns true if this character is currently speaking.
+    /// </summary>
+    private bool GetThisCharacterSpeaking(string characterName)
+    {
+        return charactersSpeaking.ContainsKey(characterName) && charactersSpeaking[characterName].isPlaying;
+    }
+
+    /// <summary>
+    /// Returns true if there is any character currently speaking.
     /// </summary>
     private bool GetAnyCharacterSpeaking()
     {
@@ -276,54 +312,14 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Simply logs that the character can't speak yet because of the INTERRUPT_MODE used. Does not play the new dialog.
-    /// </summary>
-    private void CantSpeak(string characterName)
-    {
-        Debug.Log(characterName + "is already speaking. Did not interrupt.");
-    }
-
-    /// <summary>
-    /// Stops the currently playing dialog by the specified character before playing the new dialog.
-    /// </summary>
-    private void InterruptSelf(string characterName, string soundCueName, bool is3D, Transform parent)
-    {
-        Debug.Log(characterName + "is already speaking. Interrupting previous dialog.");
-        charactersSpeaking[characterName].Stop();
-        charactersSpeaking.Remove(characterName);
-
-        charactersSpeaking.Remove(characterName);
-
-        PlayAndAddCharacterDialog(characterName, soundCueName, is3D, parent);
-    }
-
-    /// <summary>
-    /// Stops all currently speaking characters and then plays the new dialog.
-    /// </summary>
-    private void InterruptAll(string characterName, string soundCueName, bool is3D, Transform parent)
-    {
-        Debug.Log(characterName + "Interrupting ALL characters!");
-        foreach (AudioSource charSource in charactersSpeaking.Values)
-        {
-            charSource.Stop();
-        }
-        charactersSpeaking.Clear();
-
-        PlayAndAddCharacterDialog(characterName, soundCueName, is3D, parent);
-    }
-
-    /// <summary>
     /// Actually plays the dialog and saves a reference to the AudioSource in the Dictionary so it can be interrupted later if needed.
     /// </summary>
     private void PlayAndAddCharacterDialog(string characterName, string soundCueName, bool is3D, Transform parent)
     {
+        charactersSpeaking.Remove(characterName);
         AudioSource source = PlaySound(soundCueName, is3D, true, false, false, "", "", parent);
         charactersSpeaking.Add(characterName, source);
     }
-
-    #endregion
-
-    #region Helper Functions
 
     /// <summary>
     /// Processes an AudioSource from a pool to play the sound.
@@ -538,7 +534,5 @@ public class SourcePool
         sources.Remove(source);
     }
 }
-
-// TODO prevent lower priority dialog from starting after a higher priority dialog started.
 
 // TODO add copyright and donation info and webpage
