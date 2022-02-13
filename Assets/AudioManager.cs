@@ -540,3 +540,5 @@ public class SourcePool
 }
 
 // TODO prevent lower priority dialog from starting after a higher priority dialog started.
+
+// TODO add copyright and donation info and webpage
