@@ -316,7 +316,11 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     private void PlayAndAddCharacterDialog(string characterName, string soundCueName, bool is3D, Transform parent)
     {
-        charactersSpeaking.Remove(characterName);
+        if (charactersSpeaking.ContainsKey(characterName))
+        {
+            charactersSpeaking[characterName].Stop();
+            charactersSpeaking.Remove(characterName);
+        }
         AudioSource source = PlaySound(soundCueName, is3D, true, false, false, "", "", parent);
         charactersSpeaking.Add(characterName, source);
     }
