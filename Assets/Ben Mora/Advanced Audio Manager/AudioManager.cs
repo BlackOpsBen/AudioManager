@@ -25,8 +25,8 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     public const int INTERRUPT_ALL = 3;
 
+    // If a character speaks with INTERRUPT_ALL, this string will be set to their name.
     private string priorityCharacter;
-    
 
     private SoundCue[] soundCues;
     private AudioClip[] audioClips;
@@ -424,12 +424,13 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     private void PlayLoop(string uniqueId, AudioClip clip, AudioSource source)
     {
-        source.clip = clip;
-        source.loop = true;
-        source.Play();
-
-        StopLooping(uniqueId);
-        loopInstances.Add(uniqueId, source);
+        if (!loopInstances.ContainsKey(uniqueId))
+        {
+            source.clip = clip;
+            source.loop = true;
+            source.Play();
+            loopInstances.Add(uniqueId, source);
+        }
     }
 
     /// <summary>
