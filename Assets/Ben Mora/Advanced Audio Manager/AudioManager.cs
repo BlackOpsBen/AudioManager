@@ -11,11 +11,11 @@ public class AudioManager : MonoBehaviour
     /// <summary>
     /// Use for low priority dialog that will never happen if ANY character is already talking.
     /// </summary>
-    public const int INTERRUPT_OVERLAP_NONE = 0;
+    public const int INTERRUPT_NONE = 0;
     /// <summary>
     /// Use for low priority dialog that will not play if the character is currently speaking, but will still play concurrently with other speaking characters.
     /// </summary>
-    public const int INTERRUPT_NONE = 1;
+    public const int INTERRUPT_OVERLAP = 1;
     /// <summary>
     /// Use for medium priority dialog that will stop any previous dialog from the character, but all other characters will continue speaking.
     /// </summary>
@@ -67,155 +67,102 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    #region Play 2D Sounds
+    #region PlaySound Overloads
 
-    #region Play 2D AudioClips
-
+    // 2D
     /// <summary>
-    /// Plays the named AudioClip from the Resources folder.
+    /// Plays the named AudioClip or SoundCue as a 2D sound.
     /// </summary>
-    public void PlayAudioClip2D(string name)
+    public void PlaySound(string name)
     {
-        PlaySound(name, false, false, false, false);
+        if (ProcessPlaySound(name, is3D: false, isSoundCue: false, specificMixerGroup: false, isLooping: false) == null)
+        {
+            ProcessPlaySound(name, is3D: false, isSoundCue: true, specificMixerGroup: false, isLooping: false);
+        }
+    }
+    // 2D LOOPING
+    /// <summary>
+    /// Plays and loops the named AudioClip or SoundCue as a 2D sound. The loopId is an arbitrary string used to identify the loop if you want to stop it later.
+    /// </summary>
+    public void PlaySoundLoop(string name, string loopId)
+    {
+        if (ProcessPlaySound(name, is3D: false, isSoundCue: false, specificMixerGroup: false, isLooping: true, uniqueId:loopId) == null)
+        {
+            ProcessPlaySound(name, is3D: false, isSoundCue: true, specificMixerGroup: false, isLooping: true, uniqueId: loopId);
+        }
     }
 
+    // 3D
     /// <summary>
-    /// Plays the named AudioClip from the Resources folder and in the specified AudioMixerGroup.
+    /// Plays the named AudioClip or SoundCue as a 3D sound attached to the provided parent.
     /// </summary>
-    public void PlayAudioClip2D(string name, string mixerGroupName)
+    public void PlaySound(string name, Transform parent)
     {
-        PlaySound(name, false, false, true, false, mixerGroupName);
+        if (ProcessPlaySound(name, is3D: true, isSoundCue: false, specificMixerGroup: false, isLooping: false, parent:parent) == null)
+        {
+            ProcessPlaySound(name, is3D: true, isSoundCue: true, specificMixerGroup: false, isLooping: false, parent:parent);
+        }
     }
 
+    // 3D LOOPING
     /// <summary>
-    /// Plays and loops the named AudioClip from the Resources folder. Provide an arbitrary uniqueId and use that same string in StopSound2DLooping in order to stop that instance of the loop.
+    /// Plays and loops the named AudioClip or SoundCue as a 3D sound attached to the provided parent. The loopId is an arbitrary string used to identify the loop if you want to stop it later.
     /// </summary>
-    public void PlayAudioClip2DLooping(string name, string uniqueId)
+    public void PlaySoundLoop(string name, Transform parent, string loopId)
     {
-        PlaySound(name, false, false, false, true, "", uniqueId);
+        if (ProcessPlaySound(name, is3D: true, isSoundCue: false, specificMixerGroup: false, isLooping: true, uniqueId:loopId, parent:parent) == null)
+        {
+            ProcessPlaySound(name, is3D: true, isSoundCue: true, specificMixerGroup: false, isLooping: true, uniqueId: loopId, parent: parent);
+        }
     }
 
+    // 2D OVERRIDE MIXERGROUP
     /// <summary>
-    /// Plays and loops the named AudioClip from the Resources folder and in the specified AudioMixerGroup. Provide an arbitrary uniqueId and use that same string in StopSound2DLooping in order to stop that instance of the loop.
+    /// Plays the named AudioClip or SoundCue as a 2D sound through the specified AudioMixerGroup.
     /// </summary>
-    public void PlayAudioClip2DLooping(string name, string mixerGroupName, string uniqueId)
+    public void PlaySound(string name, string mixerGroupOverride = "")
     {
-        PlaySound(name, false, false, true, true, mixerGroupName, uniqueId);
+        if (ProcessPlaySound(name, is3D: false, isSoundCue: false, specificMixerGroup: true, isLooping: false, mixerGroupOverride) == null)
+        {
+            ProcessPlaySound(name, is3D: false, isSoundCue: true, specificMixerGroup: true, isLooping: false, mixerGroupOverride);
+        }
     }
 
-    #endregion
-
-    #region Play 2D SoundCues
-
+    // 2D LOOPING OVERRIDE MIXERGROUP
     /// <summary>
-    /// Plays the named SoundCue from the Resources folder.
+    /// Plays and loops the named AudioClip or SoundCue as a 2D sound through the specified AudioMixerGroup. The loopId is an arbitrary string used to identify the loop if you want to stop it later.
     /// </summary>
-    public void PlaySoundCue2D(string name)
+    public void PlaySoundLoop(string name, string loopId, string mixerGroupOverride = "")
     {
-        PlaySound(name, false, true, false, false);
+        if (ProcessPlaySound(name, is3D: false, isSoundCue: false, specificMixerGroup: false, isLooping: true, uniqueId: loopId, mixerGroupName: mixerGroupOverride) == null)
+        {
+            ProcessPlaySound(name, is3D: false, isSoundCue: true, specificMixerGroup: false, isLooping: true, uniqueId: loopId, mixerGroupName: mixerGroupOverride);
+        }
     }
 
+    // 3D OVERRIDE MIXERGROUP
     /// <summary>
-    /// Plays the named SoundCue from the Resources folder and in the specified AudioMixerGroup.
+    /// Plays the named AudioClip or SoundCue as a 3D sound attached to the provided parent and through the specified AudioMixerGroup.
     /// </summary>
-    public void PlaySoundCue2D(string name, string mixerGroupName)
+    public void PlaySound(string name, Transform parent, string mixerGroupOverride = "")
     {
-        PlaySound(name, false, true, true, false, mixerGroupName, "");
+        if (ProcessPlaySound(name, is3D: true, isSoundCue: false, specificMixerGroup: false, isLooping: false, mixerGroupName: mixerGroupOverride, parent: parent) == null)
+        {
+            ProcessPlaySound(name, is3D: true, isSoundCue: true, specificMixerGroup: false, isLooping: false, mixerGroupName: mixerGroupOverride, parent: parent);
+        }
     }
 
+    // 3D LOOPING OVERRIDE MIXERGROUP
     /// <summary>
-    /// Plays and loops the named SoundCue from the Resources folder. Provide an arbitrary uniqueId and use that same string in StopSound2DLooping in order to stop that instance of the loop.
+    /// Plays and loops the named AudioClip or SoundCue as a 3D sound attached to the provided parent and through the specified AudioMixerGroup. The loopId is an arbitrary string used to identify the loop if you want to stop it later.
     /// </summary>
-    public void PlaySoundCue2DLooping(string name, string uniqueId)
+    public void PlaySoundLoop(string name, Transform parent, string loopId, string mixerGroupOverride = "")
     {
-        PlaySound(name, false, true, false, true, "", uniqueId);
+        if (ProcessPlaySound(name, is3D: true, isSoundCue: false, specificMixerGroup: false, isLooping: true, mixerGroupName: mixerGroupOverride, uniqueId: loopId, parent: parent) == null)
+        {
+            ProcessPlaySound(name, is3D: true, isSoundCue: true, specificMixerGroup: false, isLooping: true, mixerGroupName: mixerGroupOverride, uniqueId: loopId, parent: parent);
+        }
     }
-
-    /// <summary>
-    /// Plays and loops the named SoundCue from the Resources folder and in the specified AudioMixerGroup. Provide an arbitrary uniqueId and use that same string in StopSound2DLooping in order to stop that instance of the loop.
-    /// </summary>
-    public void PlaySoundCue2DLooping(string name, string mixerGroupName, string uniqueId)
-    {
-        PlaySound(name, false, true, true, true, mixerGroupName, uniqueId);
-    }
-    #endregion
-
-    #endregion
-
-    #region Play 3D Sounds
-
-    #region Play 3D AudioClips
-
-    /// <summary>
-    /// Plays the named AudioClip from the Resources folder as a 3D sound attached to the provided Transform.
-    /// </summary>
-    public void PlayAudioClip3D(string name, Transform parent)
-    {
-        PlaySound(name, true, false, false, false, "", "", parent);
-    }
-
-    /// <summary>
-    /// Plays the named AudioClip from the Resources folder and in the specified AudioMixerGroup, as a 3D sound attached to the provided Transform.
-    /// </summary>
-    public void PlayAudioClip3D(string name, string mixerGroupName, Transform parent)
-    {
-        PlaySound(name, true, false, true, false, mixerGroupName, "", parent);
-    }
-
-    /// <summary>
-    /// Plays and loops the named AudioClip from the Resources folder as a 3D sound attached to the provided Transform.
-    /// </summary>
-    public void PlayAudioClip3DLooping(string name, string uniqueId, Transform parent)
-    {
-        PlaySound(name, true, false, false, true, "", uniqueId, parent);
-    }
-
-    /// <summary>
-    /// Plays and loops the named AudioClip from the Resources folder and in the specified AudioMixerGroup, as a 3D sound attached to the provided Transform.
-    /// </summary>
-    public void PlayAudioClip3DLooping(string name, string mixerGroupName, string uniqueId, Transform parent)
-    {
-        PlaySound(name, true, false, true, true, mixerGroupName, uniqueId, parent);
-    }
-
-    #endregion
-
-    #region Play 3D SoundCues
-
-    /// <summary>
-    /// Plays the named SoundCue from the Resources folder as a 3D sound attached to the provided Transform.
-    /// </summary>
-    public void PlaySoundCue3D(string name, Transform parent)
-    {
-        PlaySound(name, true, true, false, false, "", "", parent);
-    }
-
-    /// <summary>
-    /// Plays the named SoundCue from the Resources folder and in the specified AudioMixerGroup, as a 3D sound attached to the provided Transform.
-    /// </summary>
-    public void PlaySoundCue3D(string name, string mixerGroupName, Transform parent)
-    {
-        PlaySound(name, true, true, true, false, mixerGroupName, "", parent);
-    }
-
-    /// <summary>
-    /// Plays and loops the named SoundCue from the Resources folder as a 3D sound attached to the provided Transform.
-    /// </summary>
-    public void PlaySoundCue3DLooping(string name, string uniqueId, Transform parent)
-    {
-        PlaySound(name, true, true, false, true, "", uniqueId, parent);
-    }
-
-    /// <summary>
-    /// Plays and loops the named SoundCue from the Resources folder and in the specified AudioMixerGroup, as a 3D sound attached to the provided Transform.
-    /// </summary>
-    public void PlaySoundCue3DLooping(string name, string mixerGroupName, string uniqueId, Transform parent)
-    {
-        PlaySound(name, true, true, true, true, mixerGroupName, uniqueId, parent);
-    }
-
-
-    #endregion
 
     #endregion
 
@@ -224,29 +171,29 @@ public class AudioManager : MonoBehaviour
     /// <summary>
     /// Attempt to play dialog from a specific character. Plays as a 2D sound unless is3D is set to true, in which case it is attached to the provided parent. The INTERRUPT_MODE determines whether the character can interrupt itself and/or other currently speaking characters. Uses the AudioMixerGroup of the specified SoundCue. Returns true/false if the dialog actually played.
     /// </summary>
-    public bool PlayDialog(string characterName, string soundCueName, bool is3D = false, Transform parent = null, int INTERRUPT_MODE = INTERRUPT_NONE)
+    public bool PlayDialog(string characterName, string soundName, bool is3D = false, Transform parent = null, int INTERRUPT_MODE = INTERRUPT_OVERLAP)
     {
 
         switch (INTERRUPT_MODE)
         {
-            case INTERRUPT_OVERLAP_NONE:
+            case INTERRUPT_NONE:
                 if (!GetAnyCharacterSpeaking())
                 {
-                    PlayAndAddCharacterDialog(characterName, soundCueName, is3D, parent);
+                    PlayAndAddCharacterDialog(characterName, soundName, is3D, parent);
                     return true;
                 }
                 return false;
-            case INTERRUPT_NONE:
+            case INTERRUPT_OVERLAP:
                 if (!GetThisCharacterSpeaking(characterName) && !GetPriorityDialogSpeaking())
                 {
-                    PlayAndAddCharacterDialog(characterName, soundCueName, is3D, parent);
+                    PlayAndAddCharacterDialog(characterName, soundName, is3D, parent);
                     return true;
                 }
                 return false;
             case INTERRUPT_SELF:
                 if (!GetPriorityDialogSpeaking())
                 {
-                    PlayAndAddCharacterDialog(characterName, soundCueName, is3D, parent);
+                    PlayAndAddCharacterDialog(characterName, soundName, is3D, parent);
                     return true;
                 }
                 return false;
@@ -256,13 +203,13 @@ public class AudioManager : MonoBehaviour
                     charSource.Stop();
                 }
                 charactersSpeaking.Clear();
-                PlayAndAddCharacterDialog(characterName, soundCueName, is3D, parent);
+                PlayAndAddCharacterDialog(characterName, soundName, is3D, parent);
                 priorityCharacter = characterName;
                 return true;
             default:
                 if (!GetAnyCharacterSpeaking())
                 {
-                    PlayAndAddCharacterDialog(characterName, soundCueName, is3D, parent);
+                    PlayAndAddCharacterDialog(characterName, soundName, is3D, parent);
                     return true;
                 }
                 return false;
@@ -293,7 +240,15 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     private bool GetThisCharacterSpeaking(string characterName)
     {
-        return charactersSpeaking.ContainsKey(characterName) && charactersSpeaking[characterName].isPlaying;
+        if (charactersSpeaking.ContainsKey(characterName))
+        {
+            if (charactersSpeaking[characterName].isPlaying)
+            {
+                Debug.Log(characterName + " is speaking!");
+                return true;
+            }
+        }
+        return false;
     }
 
     /// <summary>
@@ -314,21 +269,26 @@ public class AudioManager : MonoBehaviour
     /// <summary>
     /// Actually plays the dialog and saves a reference to the AudioSource in the Dictionary so it can be interrupted later if needed.
     /// </summary>
-    private void PlayAndAddCharacterDialog(string characterName, string soundCueName, bool is3D, Transform parent)
+    private void PlayAndAddCharacterDialog(string characterName, string soundName, bool is3D, Transform parent)
     {
         if (charactersSpeaking.ContainsKey(characterName))
         {
             charactersSpeaking[characterName].Stop();
             charactersSpeaking.Remove(characterName);
         }
-        AudioSource source = PlaySound(soundCueName, is3D, true, false, false, "", "", parent);
+        AudioSource source = ProcessPlaySound(soundName, is3D, isSoundCue: false, false, false, parent: parent);
+        if (source == null)
+        {
+            source = ProcessPlaySound(soundName, is3D, isSoundCue: true, false, false, parent: parent);
+        }
+
         charactersSpeaking.Add(characterName, source);
     }
 
     /// <summary>
     /// Processes an AudioSource from a pool to play the sound.
     /// </summary>
-    private AudioSource PlaySound(string name, bool is3D, bool isSoundCue, bool specificMixerGroup, bool isLooping, string mixerGroupName = "", string uniqueId = "", Transform parent = null)
+    private AudioSource ProcessPlaySound(string name, bool is3D, bool isSoundCue, bool specificMixerGroup, bool isLooping, string mixerGroupName = "", string uniqueId = "", Transform parent = null)
     {
         AudioClip clip;
         SoundCue cue;
@@ -351,6 +311,10 @@ public class AudioManager : MonoBehaviour
         if (!isSoundCue)
         {
             clip = Array.Find(audioClips, sound => sound.name == name);
+            if (clip == null)
+            {
+                return null;
+            }
             source.volume = 1.0f;
             source.pitch = 1.0f;
 
@@ -372,7 +336,7 @@ public class AudioManager : MonoBehaviour
             }
             else
             {
-                PlayLoop(uniqueId, clip, source);
+                StartLooping(uniqueId, clip, source);
             }
             #endregion
         }
@@ -410,7 +374,7 @@ public class AudioManager : MonoBehaviour
             }
             else
             {
-                PlayLoop(uniqueId, cue.GetRandomClip(), source);
+                StartLooping(uniqueId, cue.GetRandomClip(), source);
             }
             #endregion
         }
@@ -422,7 +386,7 @@ public class AudioManager : MonoBehaviour
     /// <summary>
     /// Plays the sound as a loop and saves a reference to the AudioSource in loopInstances.
     /// </summary>
-    private void PlayLoop(string uniqueId, AudioClip clip, AudioSource source)
+    private void StartLooping(string uniqueId, AudioClip clip, AudioSource source)
     {
         if (!loopInstances.ContainsKey(uniqueId))
         {
@@ -541,3 +505,5 @@ public class SourcePool
 }
 
 // TODO add copyright and donation info and webpage
+
+// TODO make PlayDialog Clip/Cue agnostic

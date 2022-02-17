@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b520ef43ea5b5e46bcc19062dd5d0b8, type: 3}
+  m_Name: Char_1_Selected
+  m_EditorClassIdentifier: 
+  clipOptions:
+  - {fileID: 8300000, guid: 8cb1242fad322474daa7502c16e74a70, type: 3}
+  - {fileID: 8300000, guid: eca0be1a89a1f0b4f8eee0e9a7a504c9, type: 3}
+  - {fileID: 8300000, guid: ef05ab6576a1c384988b1f17bdb3b089, type: 3}
+  - {fileID: 8300000, guid: ac89c8bb5dc150b41a5c44ce93338add, type: 3}
+  - {fileID: 8300000, guid: 53b4dd1ea48770f44818f06fdc8fa8e1, type: 3}
+  audioMixerGroup: {fileID: 8682120267037873171, guid: c607ec028faad41899481ad3f1ee8496, type: 2}
+  enableModulation: 0
+  pitchMin: 0.95
+  pitchMax: 1.05
+  volumeMin: 0.95
+  volumeMax: 1.05
